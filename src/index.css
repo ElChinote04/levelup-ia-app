@@ -1,0 +1,72 @@
+:root {
+  --navy-violet-1: #1c1a4a;
+  --navy-violet-2: #2b1c4e;
+  --gradient-blue: #4c6fff;
+  --gradient-mid: #8b3fe8;
+  --gradient-magenta: #b721d6;
+  --amber-1: #f5c744;
+  --amber-2: #d9a61e;
+  --highlight-lavender: #e4dcfa;
+  --highlight-lavender-soft: #efeaFB;
+
+  --ink: #16151f;
+  --text-body: #4a4857;
+  --text-muted: #6b6a7b;
+  --text-faint: #8a889a;
+  --text-placeholder: #a09eb0;
+
+  --bg-app: #f7f7fb;
+  --bg-field: #f4f3f9;
+  --border-field: #edebf4;
+  --border-card: #e9e8f0;
+  --border-subtle: #e3e2ec;
+
+  --green-bg: #e7f6ec;
+  --green-text: #135c37;
+  --green-icon: #1c7a4a;
+  --red-bg: #fff0f1;
+  --red-text: #c0263a;
+  --pink-bg: #fdeaea;
+  --purple-chip-bg: #f3efFC;
+  --purple-chip-text: #6b4cd8;
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg-app);
+  font-family: Inter, system-ui, sans-serif;
+  color: var(--text-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+a {
+  color: var(--gradient-blue);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--gradient-magenta);
+}
+
+button {
+  font-family: inherit;
+}
+
+.heading-font {
+  font-family: Manrope, sans-serif;
+}

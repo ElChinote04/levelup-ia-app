@@ -1,13 +1,14 @@
 import { useNavigate } from 'react-router-dom';
 import Screen from '../components/Screen.jsx';
 import TabBar from '../components/TabBar.jsx';
+import StatCard from '../components/StatCard.jsx';
 import Highlight from '../components/Highlight.jsx';
 
 const stats = [
-  { icon: '🧠', value: 'Lv. 2', label: 'NIVEL', badgeBg: '#ECE9FB' },
-  { icon: '⚡', value: '465', label: 'XP', badgeBg: '#FDEEDB' },
-  { icon: '🔥', value: '3', label: 'RACHA', badgeBg: '#FBE6EA' },
-  { icon: '📊', value: '2', label: 'CURSOS', badgeBg: '#E3F1EC' },
+  { icon: '🧠', value: 'Lv. 2', label: 'Nivel actual', badgeBg: '#ECE9FB' },
+  { icon: '⚡', value: '465', label: 'XP acumulada', badgeBg: '#FDEEDB' },
+  { icon: '🔥', value: '3', label: 'Racha diaria', badgeBg: '#FBE6EA' },
+  { icon: '📊', value: '2', label: 'Cursos activos', badgeBg: '#E3F1EC' },
 ];
 
 const profileFields = [
@@ -60,13 +61,9 @@ export default function DashboardScreen() {
           </div>
         </div>
 
-        <div style={{ flex: 'none', background: '#FFFFFF', border: '1px solid #F1EAD9', borderRadius: 18, padding: '11px 6px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)' }}>
+        <div style={{ flex: 'none', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 9 }}>
           {stats.map((s) => (
-            <div key={s.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-              <div style={{ width: 26, height: 26, borderRadius: 999, background: s.badgeBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>{s.icon}</div>
-              <div className="heading-font" style={{ fontSize: 17, fontWeight: 800, color: '#1C1C22', lineHeight: 1 }}>{s.value}</div>
-              <div style={{ fontSize: 8.5, fontWeight: 700, letterSpacing: '0.1em', color: '#8A8570' }}>{s.label}</div>
-            </div>
+            <StatCard key={s.label} icon={s.icon} iconBg={s.badgeBg} value={s.value} label={s.label} />
           ))}
         </div>
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Screen from '../components/Screen.jsx';
+import IconButton from '../components/IconButton.jsx';
 
 const students = [
   { initials: 'LM', bg: '#ECE9FB', color: '#4B3A9E', name: 'Lucía Mendoza', meta: 'Adm. de Negocios · Mundo 2', status: 'Activa', statusBg: '#E3F1EC', statusColor: '#235847' },
@@ -36,17 +37,26 @@ export default function AdminScreen() {
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', color: 'rgba(255,255,255,0.72)' }}>RESUMEN DEL CICLO · 2026-1</div>
           <div className="heading-font" style={{ fontSize: 22, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.02em', lineHeight: 1.18 }}>248 estudiantes afiliados avanzando.</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
-            <div style={{ background: 'rgba(255,255,255,0.14)', borderRadius: 16, padding: 11 }}>
-              <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.78)' }}>USO SEMANAL</div>
-              <div className="heading-font" style={{ fontSize: 20, fontWeight: 800, color: '#FFFFFF', marginTop: 4 }}>72%</div>
+            <div style={{ background: 'rgba(255,255,255,0.14)', borderRadius: 16, padding: 11, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ width: 26, height: 26, borderRadius: 999, background: 'rgba(255,255,255,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>📶</div>
+              <div>
+                <div className="heading-font" style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>72%</div>
+                <div style={{ fontSize: 9, fontWeight: 600, color: 'rgba(255,255,255,0.78)' }}>Uso semanal</div>
+              </div>
             </div>
-            <div style={{ background: 'rgba(255,255,255,0.14)', borderRadius: 16, padding: 11 }}>
-              <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.78)' }}>PROGRESO</div>
-              <div className="heading-font" style={{ fontSize: 20, fontWeight: 800, color: '#FFFFFF', marginTop: 4 }}>3.4<span style={{ fontSize: 12 }}>/7</span></div>
+            <div style={{ background: 'rgba(255,255,255,0.14)', borderRadius: 16, padding: 11, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ width: 26, height: 26, borderRadius: 999, background: 'rgba(255,255,255,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>🎯</div>
+              <div>
+                <div className="heading-font" style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>3.4<span style={{ fontSize: 11 }}>/7</span></div>
+                <div style={{ fontSize: 9, fontWeight: 600, color: 'rgba(255,255,255,0.78)' }}>Progreso</div>
+              </div>
             </div>
-            <div style={{ background: 'rgba(255,255,255,0.14)', borderRadius: 16, padding: 11 }}>
-              <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.78)' }}>DESEMPEÑO</div>
-              <div className="heading-font" style={{ fontSize: 20, fontWeight: 800, color: '#FFFFFF', marginTop: 4 }}>81%</div>
+            <div style={{ background: 'rgba(255,255,255,0.14)', borderRadius: 16, padding: 11, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ width: 26, height: 26, borderRadius: 999, background: 'rgba(255,255,255,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>🏆</div>
+              <div>
+                <div className="heading-font" style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>81%</div>
+                <div style={{ fontSize: 9, fontWeight: 600, color: 'rgba(255,255,255,0.78)' }}>Desempeño</div>
+              </div>
             </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 9 }}>
@@ -58,7 +68,7 @@ export default function AdminScreen() {
         <div style={{ background: '#FFFFFF', border: '1px solid #F1EAD9', borderRadius: 20, padding: 13, display: 'flex', flexDirection: 'column', gap: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '0.14em', color: '#8A8570' }}>LICENCIAS PLAN PLUS</div>
-            <div onClick={() => setActiveTab('licencias')} style={{ fontSize: 11.5, fontWeight: 700, color: '#D14863', cursor: 'pointer' }}>Gestionar</div>
+            <div onClick={() => setActiveTab('licencias')} style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11.5, fontWeight: 700, color: '#1C1C22', cursor: 'pointer' }}>Gestionar <span style={{ fontSize: 13 }}>↗</span></div>
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
             <div className="heading-font" style={{ fontSize: 28, fontWeight: 800, color: '#1C1C22' }}>180</div>
@@ -87,7 +97,7 @@ export default function AdminScreen() {
             <div key={r.label} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
               <div style={{ width: 32, height: 32, borderRadius: 11, background: r.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15 }}>{r.icon}</div>
               <div style={{ flex: 1, fontSize: 12.5, fontWeight: 600, color: '#1C1C22' }}>{r.label}</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#D14863' }}>↓</div>
+              <IconButton size={30} bg="#FBF1DE" color="#1C1C22" fontSize={13}>↓</IconButton>
             </div>
           ))}
         </div>

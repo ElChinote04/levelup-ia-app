@@ -98,7 +98,7 @@ export default function ChatScreen() {
           placeholder="Escríbele a Nova..."
           style={{ flex: 1, height: 50, borderRadius: 999, background: '#FBF1DE', border: '1px solid #F1EAD9', padding: '0 18px', fontSize: 14, color: '#1C1C22', outline: 'none' }}
         />
-        <button type="submit" style={{ width: 50, height: 50, flex: 'none', borderRadius: 999, background: '#EA6079', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, color: '#FFFFFF', boxShadow: '0 10px 22px rgba(234,96,121,0.32)', cursor: 'pointer' }}>↑</button>
+        <button type="submit" style={{ width: 50, height: 50, flex: 'none', borderRadius: 999, background: '#1C1C22', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, color: '#FFFFFF', boxShadow: '0 10px 22px rgba(28,28,34,0.28)', cursor: 'pointer' }}>↑</button>
       </form>
     </Screen>
   );

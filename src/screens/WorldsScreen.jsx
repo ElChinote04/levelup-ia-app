@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import Screen from '../components/Screen.jsx';
 import TabBar from '../components/TabBar.jsx';
+import IconButton from '../components/IconButton.jsx';
 import Highlight from '../components/Highlight.jsx';
 
 const worlds = [
@@ -45,7 +46,10 @@ export default function WorldsScreen() {
                   <div style={{ fontSize: 13 }}>🔒</div>
                 </div>
               ) : (
-                <div style={{ width: 44, height: 44, borderRadius: 14, background: w.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 21 }}>{w.icon}</div>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 14, background: w.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 21 }}>{w.icon}</div>
+                  <IconButton size={26} bg="#FBF1DE" color="#1C1C22" fontSize={12}>→</IconButton>
+                </div>
               )}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <div className="heading-font" style={{ fontSize: 15.5, fontWeight: 700, color: w.locked ? '#4A4857' : '#1C1C22' }}>{w.title}</div>
@@ -76,7 +80,7 @@ export default function WorldsScreen() {
         <div onClick={() => navigate('/paywall')} style={{ background: '#FFFFFF', border: '1px solid #F1EAD9', borderRadius: 20, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', marginBottom: 6 }}>
           <div style={{ width: 38, height: 38, flex: 'none', borderRadius: 12, background: '#F2A93E', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>⭐</div>
           <div style={{ flex: 1, fontSize: 12, color: '#6B6A57', lineHeight: 1.45 }}>Abre los 7 mundos con <span style={{ fontWeight: 700, color: '#1C1C22' }}>Plan Plus</span></div>
-          <div style={{ height: 36, padding: '0 15px', borderRadius: 999, background: '#1C1C22', display: 'flex', alignItems: 'center', fontSize: 12.5, fontWeight: 700, color: '#FFFFFF' }}>Ver</div>
+          <IconButton size={36} fontSize={15}>→</IconButton>
         </div>
       </div>
       <TabBar tabs={TABS} active="mundos" />

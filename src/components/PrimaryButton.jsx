@@ -1,4 +1,4 @@
-export default function GradientButton({ children, onClick, height = 54, fontSize = 16, style, ...rest }) {
+export default function PrimaryButton({ children, onClick, height = 54, fontSize = 16, style, ...rest }) {
   return (
     <button
       onClick={onClick}
@@ -7,7 +7,7 @@ export default function GradientButton({ children, onClick, height = 54, fontSiz
         width: '100%',
         border: 'none',
         borderRadius: 999,
-        background: 'linear-gradient(90deg, #4C6FFF, #8B3FE8 55%, #B721D6)',
+        background: '#1C1C22',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -15,7 +15,7 @@ export default function GradientButton({ children, onClick, height = 54, fontSiz
         fontSize,
         fontWeight: 700,
         color: '#FFFFFF',
-        boxShadow: '0 12px 26px rgba(103,63,232,0.3)',
+        boxShadow: '0 10px 22px rgba(28,28,34,0.22)',
         cursor: 'pointer',
         ...style,
       }}

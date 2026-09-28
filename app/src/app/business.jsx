@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, Animated } from 'react-native';
 import { router } from 'expo-router';
 import { Screen, PrimaryButton } from '../components/ui';
 import { useAppState } from '../state/AppState';
 import { colors, fonts, BUSINESS_OPTIONS, BUSINESS_PLACEHOLDER_LABEL, BUSINESS_UNDEFINED } from '../theme';
 
-function FlipCard({ number, label, flipped, selected, onPress }) {
+function FlipCard({ number, image, label, flipped, selected, onPress }) {
   // Volteo simulado con scaleX (comprime a una tira vertical, cambia el contenido, se expande).
   // Evitamos rotateY + perspective: esa combinación es poco confiable con el native driver en
   // dispositivos reales (funciona en el preview web porque react-native-web simula el native
@@ -39,6 +39,8 @@ function FlipCard({ number, label, flipped, selected, onPress }) {
           <Text style={[styles.cardBackLabel, { color: selected ? colors.textDark : colors.textMuted }]}>
             {label}
           </Text>
+        ) : image ? (
+          <Image source={image} style={styles.cardImage} resizeMode="contain" />
         ) : (
           <Text style={styles.numberText}>{number}</Text>
         )}
@@ -76,10 +78,11 @@ export default function BusinessScreen() {
       </View>
 
       <View style={styles.grid}>
-        {BUSINESS_OPTIONS.map(([key, label], i) => (
+        {BUSINESS_OPTIONS.map(([key, label, image], i) => (
           <FlipCard
             key={key}
             number={i + 1}
+            image={image}
             label={label}
             flipped={business.has(key)}
             selected={business.has(key)}
@@ -135,7 +138,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 10,
+    overflow: 'hidden',
   },
+  cardImage: { width: '78%', height: '78%' },
   numberText: { fontFamily: fonts.displayBold, fontSize: 26, color: colors.textDark },
   cardBackLabel: { fontFamily: fonts.emphasis, fontSize: 16, textAlign: 'center' },
   footerStack: { padding: 28, paddingTop: 16, gap: 12 },

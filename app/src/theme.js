@@ -95,13 +95,15 @@ export const PLANETS = [
   { name: 'Finanzas', done: 0, total: 8, from: '#8CA7FF', to: '#3846C4' },
 ];
 
-// Las 5 casillas reales del grid numerado (orden = número de la casilla, 1-5).
+// Las 5 casillas reales del grid (orden = número de la casilla, 1-5). Cada una
+// lleva una imagen de referencia del rubro que se muestra en el frente de la
+// tarjeta en vez del número.
 export const BUSINESS_OPTIONS = [
-  ['skincare', 'Skincare'],
-  ['maquillaje', 'Maquillaje'],
-  ['ropa', 'Ropa'],
-  ['accesorios', 'Accesorios'],
-  ['comida', 'Comida y bebida'],
+  ['skincare', 'Skincare', require('../assets/business-skincare.png')],
+  ['maquillaje', 'Maquillaje', require('../assets/business-maquillaje.png')],
+  ['ropa', 'Ropa', require('../assets/business-ropa.png')],
+  ['accesorios', 'Accesorios', require('../assets/business-accesorios.png')],
+  ['comida', 'Comida y bebida', require('../assets/business-comida.png')],
 ];
 
 // Casilla 6: aún no tiene rubro asignado, solo muestra "Próximamente" y no es seleccionable.

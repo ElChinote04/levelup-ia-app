@@ -90,7 +90,7 @@ export default function BusinessScreen() {
           />
         ))}
         <FlipCard
-          number={BUSINESS_OPTIONS.length + 1}
+          number="..."
           label={BUSINESS_PLACEHOLDER_LABEL}
           flipped={previewFlipped}
           selected={false}

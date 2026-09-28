@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Pressable, StyleSheet, Modal } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
 import { router } from 'expo-router';
@@ -7,67 +7,41 @@ import { Screen, BackChip, BottomNavGalaxy } from '../components/ui';
 import { useAppState } from '../state/AppState';
 import { colors, fonts } from '../theme';
 
-// Camino simple de un solo trazo (como un mapa de niveles), pero ahora con el
-// telón de fondo de un mapa real: siluetas de costa muy tenues + nombres de
-// país/ciudad, en vez del terreno genérico de la versión anterior. Ajuste
-// pedido tras ver una propuesta de Claude Design con esta combinación.
-const TRAIL_W = 390;
-const TRAIL_H = 1500;
+// Pantalla estática (sin scroll): todo el camino del planeta cabe en una sola
+// vista, como en la propuesta de Claude Design. Referencia de coordenadas:
+// lienzo de 390x660 (el área que queda entre el header y la barra inferior).
 const TOTAL_STOPS = 5;
 const DONE_STOPS = 2;
 
 const NODES = [
-  { key: 'buenosaires', type: 'done-check', label: 'Buenos Aires', x: 260, y: 1330 },
-  { key: 'santiago', type: 'done-check', label: 'Santiago', x: 125, y: 1140 },
-  { key: 'lima', type: 'current', label: 'Lima', lesson: 'Lección 1 · E-commerce', x: 255, y: 940 },
-  { key: 'bogota', type: 'locked-numbered', label: 'Bogotá', number: 4, x: 120, y: 740 },
-  { key: 'cdmx', type: 'main-locked', label: 'Ciudad de México', unlockNote: 'se desbloquea en la parada 5', x: 260, y: 540 },
+  { key: 'cdmx', type: 'main-locked', label: 'Ciudad de México', unlockNote: 'se desbloquea en la parada 5', x: 262, y: 40 },
+  { key: 'bogota', type: 'locked-numbered', label: 'Bogotá', number: 4, x: 108, y: 168 },
+  { key: 'lima', type: 'current', label: 'Lima', lesson: 'Lección 1 · E-commerce', x: 195, y: 300 },
+  { key: 'santiago', type: 'done-check', label: 'Santiago', x: 272, y: 470 },
+  { key: 'buenosaires', type: 'done-check', label: 'Buenos Aires', x: 130, y: 568 },
 ];
 
 const TRAIL_D =
-  'M260,1330 C220,1270 170,1210 125,1140 C80,1070 195,1005 255,940 C300,890 165,800 120,740 C80,690 295,600 260,540 C230,495 175,430 200,380';
+  'M262,40 C220,90 155,130 108,168 C60,208 245,255 195,320 C155,368 300,415 272,470 C240,515 175,545 130,568';
 
-// Siluetas de costa muy tenues (solo trazo, sin relleno), como telón de fondo tipo mapa.
 const COASTLINES = [
-  { key: 'c1', d: 'M40,60 C120,30 180,100 150,190 C120,280 200,340 170,430 C140,520 210,600 180,690' },
-  { key: 'c2', d: 'M350,120 C300,200 340,260 290,340 C240,420 300,480 260,560 C220,640 290,700 250,780' },
-  { key: 'c3', d: 'M60,850 C130,900 100,970 160,1030 C220,1090 180,1160 240,1220 C290,1270 250,1340 300,1400' },
-  { key: 'c4', d: 'M330,900 C280,960 320,1020 280,1090 C240,1160 290,1220 250,1290' },
+  { key: 'c1', d: 'M30,10 C90,50 60,110 110,160 C160,210 120,280 170,330 C210,370 180,430 220,480' },
+  { key: 'c2', d: 'M360,20 C320,70 350,120 310,170 C270,220 300,270 260,320 C230,360 260,400 230,450' },
+  { key: 'c3', d: 'M50,420 C100,460 80,510 130,545 C170,575 150,610 190,640' },
 ];
 
 const PLACE_LABELS = [
-  { key: 'mexico', x: 70, y: 470, label: 'México' },
-  { key: 'cuba', x: 300, y: 605, label: 'Cuba' },
-  { key: 'colombia', x: 300, y: 700, label: 'Colombia' },
-  { key: 'venezuela', x: 310, y: 775, label: 'Venezuela' },
-  { key: 'ecuador', x: 40, y: 855, label: 'Ecuador' },
-  { key: 'peru', x: 300, y: 965, label: 'Perú' },
-  { key: 'chile', x: 280, y: 1155, label: 'Chile' },
-  { key: 'paraguay', x: 70, y: 1215, label: 'Paraguay' },
-  { key: 'brasil', x: 295, y: 1255, label: 'Brasil' },
-  { key: 'argentina', x: 165, y: 1385, label: 'Argentina' },
+  { key: 'mexico', x: 40, y: 22, label: 'México' },
+  { key: 'colombia', x: 260, y: 155, label: 'Colombia' },
+  { key: 'ecuador', x: 30, y: 250, label: 'Ecuador' },
+  { key: 'peru', x: 285, y: 300, label: 'Perú' },
+  { key: 'chile', x: 100, y: 455, label: 'Chile' },
+  { key: 'argentina', x: 260, y: 555, label: 'Argentina' },
 ];
 
 export default function PathScreen() {
   const { diamonds } = useAppState();
-  const scrollRef = useRef(null);
-  const didScroll = useRef(false);
-  const viewportH = useRef(0);
-
-  const scrollToLima = (animated) => {
-    const lima = NODES.find((n) => n.key === 'lima');
-    const h = viewportH.current;
-    if (!h) return;
-    const target = Math.max(0, Math.min(TRAIL_H - h, lima.y - h / 2));
-    scrollRef.current?.scrollTo({ y: target, animated });
-  };
-
-  const onLayoutViewport = (e) => {
-    viewportH.current = e.nativeEvent.layout.height;
-    if (didScroll.current) return;
-    didScroll.current = true;
-    requestAnimationFrame(() => scrollToLima(false));
-  };
+  const [madridVisible, setMadridVisible] = useState(false);
 
   return (
     <Screen bg={colors.bgPath} edges={['top']}>
@@ -89,35 +63,29 @@ export default function PathScreen() {
         </View>
       </View>
 
-      <View style={styles.trailViewport} onLayout={onLayoutViewport}>
-        <ScrollView
-          ref={scrollRef}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ width: TRAIL_W, height: TRAIL_H }}
-        >
-          <LinearGradient colors={['#0C1250', '#16205C', '#1D2596']} style={StyleSheet.absoluteFill} />
+      <View style={styles.mapArea}>
+        <LinearGradient colors={['#0C1250', '#16205C', '#1D2596']} style={StyleSheet.absoluteFill} />
 
-          <Svg width={TRAIL_W} height={TRAIL_H} style={StyleSheet.absoluteFill}>
-            {COASTLINES.map((c) => (
-              <Path key={c.key} d={c.d} stroke="#5A67C2" strokeWidth={2} fill="none" opacity={0.4} strokeLinecap="round" />
-            ))}
-            <Path
-              d={TRAIL_D}
-              stroke={colors.orange} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round"
-              fill="none" opacity={0.9}
-            />
-          </Svg>
-
-          {PLACE_LABELS.map((p) => (
-            <Text key={p.key} style={[styles.placeLabel, { left: p.x, top: p.y }]}>{p.label}</Text>
+        <Svg width="100%" height="100%" viewBox="0 0 390 660" style={StyleSheet.absoluteFill} preserveAspectRatio="none">
+          {COASTLINES.map((c) => (
+            <Path key={c.key} d={c.d} stroke="#5A67C2" strokeWidth={2} fill="none" opacity={0.4} strokeLinecap="round" />
           ))}
+          <Path
+            d={TRAIL_D}
+            stroke={colors.orange} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round"
+            fill="none" opacity={0.9}
+          />
+        </Svg>
 
-          <View style={[styles.hintPill, { left: 195 - 90, top: 388 }]}>
-            <Text style={styles.hintPillText}>sigue hacia Madrid ↗</Text>
-          </View>
+        {PLACE_LABELS.map((p) => (
+          <Text key={p.key} style={[styles.placeLabel, { left: p.x, top: p.y }]}>{p.label}</Text>
+        ))}
 
-          {NODES.map((n) => <TrailNode key={n.key} node={n} />)}
-        </ScrollView>
+        <Pressable style={[styles.hintPill, { left: 195 - 90, top: 8 }]} onPress={() => setMadridVisible(true)}>
+          <Text style={styles.hintPillText}>sigue hacia Madrid ↗</Text>
+        </Pressable>
+
+        {NODES.map((n) => <TrailNode key={n.key} node={n} />)}
 
         <View style={styles.progressPill}>
           <View style={styles.progressTrack}>
@@ -125,20 +93,30 @@ export default function PathScreen() {
           </View>
           <Text style={styles.progressText}>{DONE_STOPS} / {TOTAL_STOPS} paradas</Text>
         </View>
-
-        <Pressable style={styles.recenterButton} onPress={() => scrollToLima(true)}>
-          <View style={styles.recenterDot} />
-        </Pressable>
       </View>
 
       <BottomNavGalaxy
-        onMenu={() => {}}
+        onMenu={() => router.push('/dashboard')}
         onWorld={() => router.push('/galaxy')}
         onChat={() => router.push('/chat')}
         borderColor={colors.border}
         bg="rgba(12,18,80,0.94)"
         iconColor="#A7B0FF"
       />
+
+      <Modal visible={madridVisible} transparent animationType="fade" onRequestClose={() => setMadridVisible(false)}>
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalIcon}>
+              <Text style={{ fontSize: 28 }}>🔒</Text>
+            </View>
+            <Text style={styles.modalText}>Aún no puedes viajar a este lugar</Text>
+            <Pressable style={styles.modalButton} onPress={() => setMadridVisible(false)}>
+              <Text style={styles.modalButtonText}>Entendido</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </Screen>
   );
 }
@@ -189,10 +167,9 @@ function TrailNode({ node }) {
     );
   }
 
-  const gradientColors = [colors.cyan, '#63C9E8'];
   return (
     <View style={[styles.node, { left: x, top: y }]}>
-      <LinearGradient colors={gradientColors} style={styles.nodeCircleDone}>
+      <LinearGradient colors={[colors.cyan, '#63C9E8']} style={styles.nodeCircleDone}>
         <Text style={styles.nodeCheck}>✓</Text>
       </LinearGradient>
       <Text style={styles.nodeLabelDark}>{label}</Text>
@@ -210,9 +187,10 @@ const styles = StyleSheet.create({
   diamondChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.1)', borderWidth: 1, borderColor: colors.border },
   diamondShape: { width: 12, height: 12, backgroundColor: colors.cyan, borderRadius: 2, transform: [{ rotate: '45deg' }] },
   diamondText: { fontFamily: fonts.emphasis, fontSize: 13, color: '#FFFFFF' },
-  trailViewport: { flex: 1, overflow: 'hidden' },
 
-  placeLabel: { position: 'absolute', fontFamily: fonts.caption, fontSize: 11, letterSpacing: 0.5, color: '#8E97F0' },
+  mapArea: { flex: 1, marginTop: 4, overflow: 'hidden' },
+
+  placeLabel: { position: 'absolute', fontFamily: fonts.caption, fontSize: 10, letterSpacing: 0.5, color: '#8E97F0' },
 
   hintPill: {
     position: 'absolute', width: 180, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999,
@@ -220,41 +198,41 @@ const styles = StyleSheet.create({
   },
   hintPillText: { fontFamily: fonts.emphasis, fontSize: 11, color: colors.textDark },
 
-  node: { position: 'absolute', alignItems: 'center', gap: 7, width: 130, marginLeft: -65 },
-  nodeCircleDone: { width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center' },
-  nodeCheck: { fontFamily: fonts.displayBold, fontSize: 20, color: colors.bgPath },
+  node: { position: 'absolute', alignItems: 'center', gap: 6, width: 120, marginLeft: -60 },
+  nodeCircleDone: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center' },
+  nodeCheck: { fontFamily: fonts.displayBold, fontSize: 18, color: colors.bgPath },
   nodeLabelDark: {
-    fontFamily: fonts.cardTitle, fontSize: 12, color: '#14142B', textAlign: 'center',
-    backgroundColor: 'rgba(255,255,255,0.82)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8,
+    fontFamily: fonts.cardTitle, fontSize: 11, color: '#14142B', textAlign: 'center',
+    backgroundColor: 'rgba(255,255,255,0.82)', paddingHorizontal: 7, paddingVertical: 2, borderRadius: 8,
   },
 
-  mainStop: { width: 90, height: 90, borderRadius: 24, borderWidth: 3, borderColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', gap: 2 },
-  mainStopEyebrow: { fontFamily: fonts.caption, fontSize: 9, letterSpacing: 1, color: '#5A3C05' },
-  mainStopLabel: { fontFamily: fonts.emphasis, fontSize: 14, color: '#3A2606' },
-  unlockNote: { fontFamily: fonts.captionRegular, fontSize: 10, color: '#C3C9F5', textAlign: 'center' },
+  mainStop: { width: 78, height: 78, borderRadius: 20, borderWidth: 3, borderColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', gap: 2 },
+  mainStopEyebrow: { fontFamily: fonts.caption, fontSize: 8, letterSpacing: 1, color: '#5A3C05' },
+  mainStopLabel: { fontFamily: fonts.emphasis, fontSize: 12, color: '#3A2606' },
+  unlockNote: { fontFamily: fonts.captionRegular, fontSize: 9, color: '#C3C9F5', textAlign: 'center' },
 
   nodeCircleLocked: {
-    width: 58, height: 58, borderRadius: 29, backgroundColor: 'rgba(11,16,67,0.7)',
+    width: 50, height: 50, borderRadius: 25, backgroundColor: 'rgba(11,16,67,0.7)',
     borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.5)', borderStyle: 'dashed',
     alignItems: 'center', justifyContent: 'center',
   },
-  nodeNumber: { fontFamily: fonts.displayBold, fontSize: 18, color: '#FFFFFF' },
-  nodeLockedLabel: { fontFamily: fonts.cardTitle, fontSize: 12, color: '#FFFFFF' },
+  nodeNumber: { fontFamily: fonts.displayBold, fontSize: 16, color: '#FFFFFF' },
+  nodeLockedLabel: { fontFamily: fonts.cardTitle, fontSize: 11, color: '#FFFFFF' },
 
-  currentRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  currentRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   currentRing: {
-    width: 84, height: 84, borderRadius: 42, borderWidth: 3, borderColor: 'rgba(167,230,242,0.55)',
+    width: 72, height: 72, borderRadius: 36, borderWidth: 3, borderColor: 'rgba(167,230,242,0.55)',
     alignItems: 'center', justifyContent: 'center',
   },
-  currentCircle: { width: 66, height: 66, borderRadius: 33, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
-  nodePlay: { color: colors.accent, fontSize: 20 },
-  hereCard: { flex: 1, backgroundColor: colors.card, borderRadius: 16, padding: 12, gap: 2 },
-  hereEyebrow: { fontFamily: fonts.caption, fontSize: 9, letterSpacing: 1, color: colors.orange },
-  hereTitle: { fontFamily: fonts.displayBold, fontSize: 17, color: colors.textDark },
-  hereSub: { fontFamily: fonts.captionRegular, fontSize: 11, color: colors.accent },
+  currentCircle: { width: 56, height: 56, borderRadius: 28, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
+  nodePlay: { color: colors.accent, fontSize: 18 },
+  hereCard: { flex: 1, backgroundColor: colors.card, borderRadius: 14, padding: 10, gap: 2 },
+  hereEyebrow: { fontFamily: fonts.caption, fontSize: 8, letterSpacing: 1, color: colors.orange },
+  hereTitle: { fontFamily: fonts.displayBold, fontSize: 15, color: colors.textDark },
+  hereSub: { fontFamily: fonts.captionRegular, fontSize: 10, color: colors.accent },
 
   progressPill: {
-    position: 'absolute', left: 20, bottom: 16, flexDirection: 'row', alignItems: 'center', gap: 10,
+    position: 'absolute', left: 16, bottom: 12, flexDirection: 'row', alignItems: 'center', gap: 10,
     paddingHorizontal: 14, paddingVertical: 9, borderRadius: 999,
     backgroundColor: 'rgba(11,16,67,0.85)', borderWidth: 1, borderColor: 'rgba(167,176,255,0.35)',
   },
@@ -262,10 +240,10 @@ const styles = StyleSheet.create({
   progressFill: { height: '100%', backgroundColor: colors.orange, borderRadius: 4 },
   progressText: { fontFamily: fonts.caption, fontSize: 10, color: '#E6E9FF' },
 
-  recenterButton: {
-    position: 'absolute', right: 20, bottom: 16, width: 44, height: 44, borderRadius: 22,
-    backgroundColor: 'rgba(11,16,67,0.85)', borderWidth: 1, borderColor: 'rgba(167,176,255,0.35)',
-    alignItems: 'center', justifyContent: 'center',
-  },
-  recenterDot: { width: 12, height: 12, borderRadius: 6, borderWidth: 2, borderColor: colors.cyan },
+  modalBackdrop: { flex: 1, backgroundColor: 'rgba(6,8,30,0.72)', alignItems: 'center', justifyContent: 'center', padding: 32 },
+  modalCard: { width: '100%', maxWidth: 320, backgroundColor: colors.card, borderRadius: 22, padding: 26, alignItems: 'center', gap: 16 },
+  modalIcon: { width: 56, height: 56, borderRadius: 16, backgroundColor: colors.cardAlt, alignItems: 'center', justifyContent: 'center' },
+  modalText: { fontFamily: fonts.cardTitle, fontSize: 17, color: colors.textDark, textAlign: 'center', lineHeight: 24 },
+  modalButton: { alignSelf: 'stretch', height: 50, borderRadius: 14, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' },
+  modalButtonText: { fontFamily: fonts.emphasis, color: '#FFFFFF', fontSize: 15 },
 });

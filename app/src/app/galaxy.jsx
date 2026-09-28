@@ -136,7 +136,7 @@ export default function GalaxyScreen() {
       </View>
 
       <BottomNavGalaxy
-        onMenu={() => {}}
+        onMenu={() => router.push('/dashboard')}
         onWorld={() => {}}
         onChat={() => router.push('/chat')}
         borderColor="#2B35A2"

@@ -80,7 +80,7 @@ export default function AchievementsScreen() {
       <View style={{ flex: 1 }} />
 
       <BottomNavLight
-        onMenu={() => {}}
+        onMenu={() => router.push('/dashboard')}
         onWorld={() => router.push('/galaxy')}
         onChat={() => router.push('/chat')}
       />

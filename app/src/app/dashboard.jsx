@@ -102,7 +102,7 @@ export default function DashboardScreen() {
       </ScrollView>
 
       <BottomNavLight
-        onMenu={() => {}}
+        onMenu={() => router.push('/dashboard')}
         onWorld={() => router.push('/galaxy')}
         onChat={() => router.push('/chat')}
       />

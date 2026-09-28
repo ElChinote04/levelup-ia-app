@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LevelUp IA! — Prototipo funcional</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #05070f;
+    font-family: Manrope, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: #fff;
+  }
+  #shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    padding: 40px 16px 56px;
+  }
+  #shell-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+  }
+  #shell-header .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: #7C86E8;
+  }
+  #shell-header .title {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -.01em;
+  }
+  #shell-header .hint {
+    font-size: 13px;
+    color: #8189B8;
+    max-width: 46ch;
+  }
+  #phone-wrap {
+    position: relative;
+  }
+  #phone {
+    width: 390px;
+    max-width: calc(100vw - 32px);
+    transition: opacity .16s ease, transform .16s ease;
+  }
+  #phone.fade-out { opacity: 0; transform: scale(.985); }
+  #back-fab {
+    position: absolute;
+    top: -14px;
+    left: -14px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #171E7A;
+    border: 1px solid #3A45BA;
+    color: #E6E9FF;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 10px 24px -12px rgba(0,0,0,.6);
+    z-index: 5;
+  }
+  #back-fab.show { display: flex; }
+  a { color: inherit; }
+  [data-nav], [data-back], [data-select] { cursor: pointer; }
+  [data-nav]:active, [data-back]:active, [data-select]:active { filter: brightness(1.08); }
+  #qa-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    max-width: 640px;
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: #0E1456;
+    border: 1px solid #23297A;
+  }
+  #qa-strip .qa-label {
+    width: 100%;
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: #6670C4;
+    margin-bottom: 4px;
+  }
+  .qa-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: #171E7A;
+    border: 1px solid #2B35A2;
+    color: #AEB6EE;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .qa-dot.active {
+    background: linear-gradient(135deg,#6C63F0,#3A32C9);
+    color: #fff;
+    border-color: transparent;
+  }
+  #toast {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    transform: translateX(-50%) translateY(20px);
+    background: #171E7A;
+    border: 1px solid #4338CA;
+    color: #fff;
+    padding: 14px 20px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    box-shadow: 0 20px 40px -20px rgba(0,0,0,.6);
+    z-index: 20;
+  }
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<div id="shell">
+  <div id="shell-header">
+    <div class="eyebrow">LevelUp IA! · prototipo funcional</div>
+    <div class="title" id="screen-title">00 · Animación de apertura</div>
+    <div class="hint">Toca los botones dentro de la pantalla para navegar, igual que en la app real. La franja de abajo es solo para saltar directo a cualquier pantalla durante la revisión.</div>
+  </div>
+
+  <div id="phone-wrap">
+    <div id="back-fab" onclick="goBack()">←</div>
+    <div id="phone"></div>
+  </div>
+
+  <div id="qa-strip"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ---------------------------------------------------------------------
+// Estado
+// ---------------------------------------------------------------------
+const state = {
+  screen: 0,
+  history: [],
+  business: new Set(['ecommerce', 'ropa']),
+  quiz: 'b',
+  caseDecision: null,
+  planetIndex: 0,
+};
+
+const PLANETS = [
+  { name: 'Mentalidad', done: 3, total: 8, from: '#9E8CFF', to: '#4338CA' },
+  { name: 'Marketing', done: 1, total: 8, from: '#8CC7FF', to: '#3854C4' },
+  { name: 'Ventas', done: 0, total: 8, from: '#FF9E8C', to: '#C43854' },
+  { name: 'E-Commerce', done: 5, total: 8, from: '#8CFFE0', to: '#38C4A0' },
+  { name: 'IA', done: 0, total: 8, from: '#C9A7FF', to: '#6C3DC4' },
+  { name: 'Escalamiento', done: 0, total: 8, from: '#FFD98C', to: '#C48838' },
+  { name: 'Branding Express', done: 0, total: 8, from: '#FF8CC9', to: '#C43897' },
+  { name: 'Finanzas', done: 0, total: 8, from: '#8CA7FF', to: '#3846C4' },
+];
+
+const SCREEN_META = [
+  '00 · Animación de apertura',
+  '01 · Welcome / Login',
+  '02 · Crea tu cuenta',
+  '03 · Tipo de negocio',
+  '04 · Dashboard principal',
+  '05 · Logros e insignias',
+  '06 · Galaxia (intro mundo)',
+  '07 · Camino del planeta',
+  '08 · Lección · Video',
+  '09 · Lección · Preguntas',
+  '10 · Lección · Caso práctico',
+  '11 · Lección · Resolución',
+  '12 · Chat con Nova',
+  '13 · Sin diamantes → Premium',
+  '14 · Beneficios Premium',
+];
+
+// ---------------------------------------------------------------------
+// Navegación
+// ---------------------------------------------------------------------
+function go(id) {
+  if (id === state.screen) return;
+  state.history.push(state.screen);
+  state.screen = id;
+  render();
+}
+
+function goBack() {
+  if (!state.history.length) return;
+  state.screen = state.history.pop();
+  render();
+}
+
+function qaJump(id) {
+  state.history = [];
+  state.screen = id;
+  render();
+}
+
+function toggleBusiness(key) {
+  if (state.business.has(key)) state.business.delete(key);
+  else state.business.add(key);
+  render();
+}
+
+function setQuiz(letter) {
+  state.quiz = letter;
+  render();
+}
+
+function setCase(v) {
+  state.caseDecision = v;
+  render();
+}
+
+function cyclePlanet(delta) {
+  state.planetIndex = (state.planetIndex + delta + PLANETS.length) % PLANETS.length;
+  render();
+}
+
+function jumpPlanet(i) {
+  state.planetIndex = i;
+  render();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function activatePremium() {
+  showToast('¡Premium activado! Bienvenida de vuelta 🚀');
+  state.history = [];
+  state.screen = 4;
+  render();
+}
+
+function finishLesson() {
+  // Completar la lección es una salida, no un paso más del wizard:
+  // el camino queda como si se hubiera llegado directo desde la galaxia,
+  // para que "atrás" no reingrese a los pasos de la lección ya cerrada.
+  state.history = [6];
+  state.screen = 7;
+  render();
+}
+
+// ---------------------------------------------------------------------
+// Fragmentos compartidos
+// ---------------------------------------------------------------------
+function statusBar(color, rel) {
+  return `<div style="${rel ? 'position:relative;' : ''}display:flex;justify-content:space-between;padding:16px 28px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:${color}">
+    <div>9:41</div>
+    <div>▮▮▮</div>
+  </div>`;
+}
+
+function diamondPill(value, extra) {
+  return `<div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:#27319E;border:1px solid #3A45BA;${extra || ''}">
+    <span style="font-size:16px;line-height:1">💎</span>
+    <div style="font-size:15px;font-weight:700">${value}</div>
+  </div>`;
+}
+
+function googleIcon() {
+  return `<svg width="18" height="18" viewBox="0 0 18 18" style="flex:none">
+    <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+    <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+    <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
+    <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+  </svg>`;
+}
+
+function appleIcon(color) {
+  return `<svg width="16" height="16" viewBox="0 0 384 512" style="flex:none">
+    <path fill="${color}" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/>
+  </svg>`;
+}
+
+function navChat() {
+  return `<div style="width:24px;height:20px;border:2px solid #8E97F0;border-radius:7px 7px 7px 2px"></div>`;
+}
+
+function bottomNavLight() {
+  return `<div style="height:82px;border-top:1px solid #3A45BA;background:#27319E;display:flex;align-items:center;justify-content:space-around;padding-bottom:14px">
+    <div data-nav="6" style="width:50px;height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+      <div style="width:20px;height:2px;background:#8E97F0"></div>
+      <div style="width:20px;height:2px;background:#8E97F0"></div>
+      <div style="width:20px;height:2px;background:#8E97F0"></div>
+    </div>
+    <div data-nav="6" style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#7C6CF5,#4338CA);display:flex;align-items:center;justify-content:center">
+      <div style="width:22px;height:22px;border-radius:50%;border:2px solid #FFFFFF;position:relative">
+        <div style="position:absolute;left:-7px;top:8px;width:36px;height:6px;border-radius:50%;border:1.5px solid #FFFFFF;transform:rotate(-18deg)"></div>
+      </div>
+    </div>
+    <div data-nav="12" style="width:50px;height:50px;display:flex;align-items:center;justify-content:center">${navChat()}</div>
+  </div>`;
+}
+
+function bottomNavGalaxy(borderTop, bg, iconColor) {
+  return `<div style="position:relative;height:82px;border-top:1px solid ${borderTop};background:${bg};display:flex;align-items:center;justify-content:space-around;padding-bottom:14px">
+    <div data-nav="6" style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <div style="width:20px;height:2px;background:${iconColor}"></div>
+      <div style="width:20px;height:2px;background:${iconColor}"></div>
+      <div style="width:20px;height:2px;background:${iconColor}"></div>
+    </div>
+    <div data-nav="6" style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#7C6CF5,#4F46E5);display:flex;align-items:center;justify-content:center">
+      <div style="width:22px;height:22px;border-radius:50%;border:2px solid #0E1666;position:relative">
+        <div style="position:absolute;left:-7px;top:8px;width:36px;height:6px;border-radius:50%;border:1.5px solid #0E1666;transform:rotate(-18deg)"></div>
+      </div>
+    </div>
+    <div data-nav="12" style="width:24px;height:20px;border:2px solid ${iconColor};border-radius:7px 7px 7px 2px"></div>
+  </div>`;
+}
+
+// ---------------------------------------------------------------------
+// Pantallas
+// ---------------------------------------------------------------------
+const screens = {};
+
+screens[0] = () => `
+<div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #3A45BA;background:#0B1043;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.45)">
+  <div style="position:absolute;inset:0;background:radial-gradient(1px 1px at 18% 12%,#8E97F0 50%,transparent 51%),radial-gradient(1px 1px at 72% 20%,#C9CFFF 50%,transparent 51%),radial-gradient(1.5px 1.5px at 40% 34%,#E6E9FF 50%,transparent 51%),radial-gradient(1px 1px at 86% 58%,#8E97F0 50%,transparent 51%),radial-gradient(1px 1px at 26% 74%,#A7B0FF 50%,transparent 51%),radial-gradient(1.5px 1.5px at 60% 88%,#7C86E8 50%,transparent 51%)"></div>
+  <div style="position:absolute;left:-78px;top:-56px;width:230px;height:230px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#A597FF,#6C4CF5 55%,rgba(108,76,245,0) 76%)"></div>
+  <div style="position:absolute;right:-96px;bottom:150px;width:270px;height:270px;border-radius:50%;background:radial-gradient(circle at 38% 30%,#FFA45E,#FF5A1E 55%,rgba(255,90,30,0) 76%)"></div>
+  <div style="position:absolute;left:-66px;bottom:-30px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle at 40% 30%,#9FE9F4,#4FB8D6 55%,rgba(79,184,214,0) 76%)"></div>
+  <div style="position:absolute;left:52px;top:160px;width:13px;height:13px;border-radius:50%;background:#FFC42E;box-shadow:0 0 18px 5px rgba(255,196,46,.6)"></div>
+  <div style="position:absolute;left:14px;top:206px;width:150px;height:150px;border-radius:50%;border:1px solid rgba(230,233,255,.28);transform:rotate(-20deg)"></div>
+  <div style="position:absolute;right:52px;top:96px;font-size:13px;color:rgba(230,233,255,.75)">✦</div>
+  <div style="position:absolute;left:96px;bottom:250px;font-size:9px;color:rgba(230,233,255,.55)">✦</div>
+  ${statusBar('#BFC6FF', true)}
+  <div style="position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px">
+    <div style="width:132px;height:132px;border-radius:50%;border:2px solid #4A55C8;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 34% 30%,#2A339B,#121A6B)">
+      <div style="width:62px;height:62px;border-radius:16px;background:linear-gradient(135deg,#A7E6F2,#7C6CF5);transform:rotate(45deg)"></div>
+    </div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:#9AA3E8;text-align:center;max-width:26ch">LEVELUP IA!</div>
+  </div>
+  <div style="position:relative;display:flex;flex-direction:column;gap:12px;padding:0 28px 48px">
+    <div data-nav="2" style="height:56px;border-radius:16px;background:linear-gradient(135deg,#6C63F0,#4F46E5 55%,#3A32C9);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Sign in</div>
+    <div data-nav="1" style="height:56px;border-radius:16px;border:1px solid #4A55C8;display:flex;align-items:center;justify-content:center;color:#E6E9FF;font-size:17px;font-weight:600">Log in</div>
+  </div>
+</div>`;
+
+screens[1] = () => `
+<div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #3A45BA;background:#1D2596;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+  ${statusBar('#9AA3E8')}
+  <div style="padding:40px 28px 0;font-size:13px;font-family:'IBM Plex Mono',monospace;letter-spacing:.2em;color:#9AA3E8">LOGIN</div>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:0 28px">
+    <div style="width:104px;height:104px;border-radius:50%;border:3px solid #3A45BA;border-top-color:#A7E6F2;display:flex;align-items:center;justify-content:center">
+      <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#7C6CF5,#4338CA);transform:rotate(45deg)"></div>
+    </div>
+    <div style="font-size:30px;font-weight:800;letter-spacing:-.02em">Sign in</div>
+    <div style="width:100%;display:flex;flex-direction:column;gap:12px">
+      <div style="height:54px;border-radius:14px;background:#FFFFFF;border:1px solid #3A45BA;display:flex;align-items:center;padding:0 18px;color:#7B81B4;font-size:15px">Correo</div>
+      <div style="height:54px;border-radius:14px;background:#FFFFFF;border:1px solid #3A45BA;display:flex;align-items:center;justify-content:space-between;padding:0 18px;color:#7B81B4;font-size:15px">
+        <div>Contraseña</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px">ver</div>
+      </div>
+    </div>
+    <div data-nav="4" style="width:100%;height:56px;border-radius:16px;background:linear-gradient(135deg,#6C63F0,#4F46E5 55%,#3A32C9);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Entrar</div>
+    <div style="font-size:14px;color:#9AA3E8">¿No tienes cuenta? <span data-nav="2" style="color:#FFFFFF;font-weight:700;border-bottom:1px solid #A7E6F2">Crea una</span></div>
+  </div>
+</div>`;
+
+screens[2] = () => `
+<div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #3A45BA;background:#1D2596;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+  ${statusBar('#9AA3E8')}
+  <div style="padding:36px 28px 0;display:flex;flex-direction:column;gap:20px">
+    <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#7C6CF5,#4338CA);display:flex;align-items:center;justify-content:center">
+      <div style="width:26px;height:26px;background:#27319E;transform:rotate(45deg);border-radius:5px"></div>
+    </div>
+    <div style="font-size:34px;font-weight:800;letter-spacing:-.025em;line-height:1.1">Crea tu<br><span style="background:#4F4FE8;padding:0 6px;border-radius:5px">cuenta</span></div>
+  </div>
+  <div style="padding:28px;display:flex;flex-direction:column;gap:12px">
+    <div data-nav="3" style="height:56px;border-radius:14px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;gap:12px;font-size:16px;font-weight:600;color:#14142B">
+      ${googleIcon()}
+      <div>Continuar con Google</div>
+    </div>
+    <div data-nav="3" style="height:56px;border-radius:14px;background:#070B33;color:#FFFFFF;display:flex;align-items:center;justify-content:center;gap:12px;font-size:16px;font-weight:600">
+      ${appleIcon('#FFFFFF')}
+      <div>Continuar con Apple</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0">
+      <div style="flex:1;height:1px;background:#2B35A2"></div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9AA3E8">o con tu correo</div>
+      <div style="flex:1;height:1px;background:#2B35A2"></div>
+    </div>
+    <div style="height:54px;border-radius:14px;background:#FFFFFF;border:1px solid #3A45BA;display:flex;align-items:center;padding:0 18px;color:#7B81B4;font-size:15px">Nombre</div>
+    <div style="height:54px;border-radius:14px;background:#FFFFFF;border:1px solid #3A45BA;display:flex;align-items:center;padding:0 18px;color:#7B81B4;font-size:15px">Correo</div>
+    <div style="height:54px;border-radius:14px;background:#FFFFFF;border:1px solid #3A45BA;display:flex;align-items:center;padding:0 18px;color:#7B81B4;font-size:15px">Contraseña</div>
+    <div data-nav="3" style="height:56px;margin-top:8px;border-radius:16px;background:linear-gradient(135deg,#6C63F0,#4F46E5 55%,#3A32C9);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Continuar</div>
+    <div style="font-size:12px;line-height:1.5;color:#9AA3E8;text-align:center;padding:0 12px">Al continuar aceptas los términos y la política de privacidad.</div>
+  </div>
+</div>`;
+
+const BUSINESS_OPTIONS = [
+  ['ecommerce', 'E-commerce'],
+  ['skincare', 'Skincare y belleza'],
+  ['ropa', 'Ropa y accesorios'],
+  ['comida', 'Comida y bebidas'],
+  ['servicios', 'Servicios y consultoría'],
+  ['sindefinir', 'Aún no lo defino'],
+];
+
+screens[3] = () => `
+<div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #3A45BA;background:#1D2596;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+  ${statusBar('#9AA3E8')}
+  <div style="padding:24px 28px 0;display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;gap:6px">
+      <div style="width:34px;height:5px;border-radius:3px;background:#FF5A1E"></div>
+      <div style="width:34px;height:5px;border-radius:3px;background:#FF5A1E"></div>
+      <div style="width:34px;height:5px;border-radius:3px;background:#38429F"></div>
+    </div>
+    <div data-nav="4" style="padding:9px 18px;border-radius:999px;background:#27319E;border:1px solid #3A45BA;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;color:#AEB6EE">SKIP</div>
+  </div>
+  <div style="padding:28px 28px 18px;display:flex;flex-direction:column;gap:10px">
+    <div style="font-size:32px;font-weight:800;letter-spacing:-.025em;line-height:1.12">Tu idea de <span style="background:#4F4FE8;padding:0 6px;border-radius:5px">negocio</span></div>
+    <div style="font-size:15px;line-height:1.5;color:#AEB6EE">Adaptamos lecciones, ejemplos y casos a tu rubro.</div>
+  </div>
+  <div style="padding:0 28px;display:flex;flex-direction:column;gap:10px;flex:1">
+    ${BUSINESS_OPTIONS.map(([key, label]) => {
+      const on = state.business.has(key);
+      return `<div data-select="business" data-key="${key}" style="height:62px;border-radius:16px;background:${on ? '#A7E6F2' : '#F2F1EA'};display:flex;align-items:center;justify-content:space-between;padding:0 18px">
+        <div style="font-size:16px;font-weight:${on ? 700 : 600};color:#14142B">${label}</div>
+        ${on
+          ? `<div style="width:24px;height:24px;border-radius:7px;background:#4F4FE8;display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:13px;font-weight:700">✓</div>`
+          : `<div style="width:24px;height:24px;border-radius:7px;border:1.5px solid #C6C9E6"></div>`}
+      </div>`;
+    }).join('')}
+  </div>
+  <div style="padding:20px 28px 44px">
+    <div data-nav="4" style="height:58px;border-radius:16px;background:linear-gradient(135deg,#6C63F0,#4F46E5 55%,#3A32C9);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Comenzar</div>
+  </div>
+</div>`;
+
+screens[4] = () => `
+<div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #3A45BA;background:#1D2596;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+  ${statusBar('#9AA3E8')}
+  <div style="padding:18px 24px 14px;display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:46px;height:46px;border-radius:50%;background:#38429F;border:2px solid #FFFFFF;box-shadow:0 0 0 1px #3A45BA;display:flex;align-items:center;justify-content:center;font-size:22px">🦊</div>
+      <div style="display:flex;flex-direction:column">
+        <div style="font-size:12px;color:#9AA3E8">Hola,</div>
+        <div style="font-size:17px;font-weight:700;letter-spacing:-.01em">Camila</div>
+      </div>
+    </div>
+    ${diamondPill(128)}
+  </div>
+  <div style="padding:0 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+    <div style="height:96px;border-radius:18px;background:#F2F1EA;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+      <div style="font-size:24px;line-height:1">👥</div>
+      <div style="font-size:13px;font-weight:700;color:#14142B">Amigos</div>
+    </div>
+    <div data-nav="5" style="height:96px;border-radius:18px;background:#4338CA;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+      <div style="font-size:24px;line-height:1">🏆</div>
+      <div style="font-size:13px;font-weight:700;color:#FFFFFF">Logros</div>
+    </div>
+    <div style="height:96px;border-radius:18px;background:#F2F1EA;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+      <div style="font-size:24px;line-height:1">🛒</div>
+      <div style="font-size:13px;font-weight:700;color:#14142B">Tienda</div>
+    </div>
+  </div>
+  <div style="padding:18px 24px 6px;display:flex;justify-content:space-between">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+      <div style="width:52px;height:52px;border-radius:50%;background:#27319E;border:1px solid #3A45BA;display:flex;align-items:center;justify-content:center;font-size:22px">🔥</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9AA3E8">RACHA</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+      <div style="width:52px;height:52px;border-radius:50%;background:#27319E;border:1px solid #3A45BA;display:flex;align-items:center;justify-content:center;font-size:22px">🎯</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9AA3E8">RETO</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+      <div style="width:52px;height:52px;border-radius:50%;background:#27319E;border:1px solid #3A45BA;display:flex;align-items:center;justify-content:center;font-size:22px">🏅</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9AA3E8">RANKING</div>
+    </div>
+    <div data-nav="12" style="display:flex;flex-direction:column;align-items:center;gap:6px">
+      <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#FFC42E,#FF7A1E);display:flex;align-items:center;justify-content:center;font-size:22px">🤖</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9AA3E8">NOVA</div>
+    </div>
+  </div>
+  <div style="padding:6px 24px 0;display:flex;align-items:baseline;justify-content:space-between">
+    <div style="font-size:17px;font-weight:800;letter-spacing:-.01em">Noticias de tu rubro</div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9AA3E8">E-commerce</div>
+  </div>
+  <div style="flex:1;overflow:hidden;padding:12px 24px 0;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;gap:14px;background:#F2F1EA;border-radius:18px;padding:12px">
+      <div style="width:88px;height:74px;border-radius:12px;flex:none;background:linear-gradient(135deg,#D9EEF7,#C6E4F2);display:flex;align-items:center;justify-content:center">
+        <div style="font-size:26px">👟</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+        <div style="font-size:14px;font-weight:700;line-height:1.3;color:#14142B">Los envíos en 24h ya definen la conversión en tiendas pequeñas</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6B6F86;text-decoration:underline">leer la noticia ↗</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:14px;background:#F2F1EA;border-radius:18px;padding:12px">
+      <div style="width:88px;height:74px;border-radius:12px;flex:none;background:linear-gradient(135deg,#E4DFF6,#D6CFF0);display:flex;align-items:center;justify-content:center">
+        <div style="font-size:26px">📱</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+        <div style="font-size:14px;font-weight:700;line-height:1.3;color:#14142B">Cómo tres marcas locales duplicaron ventas con contenido propio</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6B6F86;text-decoration:underline">leer la noticia ↗</div>
+      </div>
+    </div>
+  </div>
+  ${bottomNavLight()}
+</div>`;
+
+screens[5] = () => `
+<div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #3A45BA;background:#1D2596;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+  ${statusBar('#9AA3E8')}
+  <div style="padding:18px 24px;display:flex;align-items:center;gap:14px">
+    <div data-back style="width:38px;height:38px;border-radius:12px;background:#27319E;border:1px solid #3A45BA;display:flex;align-items:center;justify-content:center;font-size:16px;color:#AEB6EE">←</div>
+    <div style="font-size:22px;font-weight:800;letter-spacing:-.02em">Logros</div>
+  </div>
+  <div style="padding:0 24px;display:flex;flex-direction:column;gap:10px">
+    <div style="background:#A7E6F2;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:15px;font-weight:700;color:#14142B">Explorador constante</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="width:13px;height:13px;background:#FF5A1E;transform:rotate(45deg);border-radius:3px"></div>
+          <div style="font-size:13px;font-weight:700;color:#14142B">+40</div>
+        </div>
+      </div>
+      <div style="height:8px;border-radius:5px;background:#FFFFFF;overflow:hidden">
+        <div style="width:68%;height:100%;background:linear-gradient(90deg,#FF5A1E,#FFC42E)"></div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2B3050">17 / 25 lecciones</div>
+    </div>
+    <div style="background:#F2F1EA;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:15px;font-weight:700;color:#14142B">Primer planeta completo</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6B6F86">listo</div>
+      </div>
+      <div style="height:8px;border-radius:5px;background:#E8E5DA;overflow:hidden">
+        <div style="width:100%;height:100%;background:#FFC42E"></div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:22px 24px 12px;font-size:17px;font-weight:800;letter-spacing:-.01em">Insignias</div>
+  <div style="padding:0 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+    <div style="aspect-ratio:1;border-radius:18px;background:#F2F1EA;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+      <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#FF7A1E,#FF3D00);display:flex;align-items:center;justify-content:center;font-size:19px">🚀</div>
+      <div style="font-size:10px;font-weight:700;color:#14142B">Despegue</div>
+    </div>
+    <div style="aspect-ratio:1;border-radius:18px;background:#F2F1EA;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+      <div style="width:24px;height:24px;background:#7C6CF5;transform:rotate(45deg);border-radius:6px"></div>
+      <div style="font-size:10px;font-weight:700;color:#14142B">7 días</div>
+    </div>
+    ${[1, 2, 3, 4].map(() => `<div style="aspect-ratio:1;border-radius:18px;background:#1A2288;border:1px dashed #4A55C8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+      <div style="width:38px;height:38px;border-radius:50%;background:#38429F;display:flex;align-items:center;justify-content:center;font-size:16px;opacity:.6">🔒</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#8F98DE">bloqueada</div>
+    </div>`).join('')}
+  </div>
+  <div style="flex:1"></div>
+  <div style="height:82px;border-top:1px solid #3A45BA;background:#27319E;display:flex;align-items:center;justify-content:space-around;padding-bottom:14px">
+    <div data-nav="6" style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <div style="width:20px;height:2px;background:#8E97F0"></div>
+      <div style="width:20px;height:2px;background:#8E97F0"></div>
+      <div style="width:20px;height:2px;background:#8E97F0"></div>
+    </div>
+    <div data-nav="6" style="width:56px;height:56px;border-radius:50%;background:#182182;border:1px solid #3A45BA;display:flex;align-items:center;justify-content:center">
+      <div style="width:22px;height:22px;border-radius:50%;border:2px solid #8E97F0;position:relative">
+        <div style="position:absolute;left:-7px;top:8px;width:36px;height:6px;border-radius:50%;border:1.5px solid #8E97F0;transform:rotate(-18deg)"></div>
+      </div>
+    </div>
+    <div data-nav="12" style="width:24px;height:20px;border:2px solid #8E97F0;border-radius:7px 7px 7px 2px"></div>
+  </div>
+</div>`;
+
+screens[6] = () => {
+  const p = PLANETS[state.planetIndex];
+  return `
+<div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #3A45BA;background:#0B1043;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.45)">
+  <div style="position:absolute;inset:0;background:radial-gradient(1px 1px at 12% 16%,#8E97F0 50%,transparent 51%),radial-gradient(1px 1px at 68% 10%,#C9CFFF 50%,transparent 51%),radial-gradient(1.5px 1.5px at 34% 42%,#E6E9FF 50%,transparent 51%),radial-gradient(1px 1px at 88% 36%,#8E97F0 50%,transparent 51%),radial-gradient(1px 1px at 22% 66%,#A7B0FF 50%,transparent 51%),radial-gradient(1.5px 1.5px at 76% 74%,#7C86E8 50%,transparent 51%),radial-gradient(1px 1px at 48% 92%,#8E97F0 50%,transparent 51%)"></div>
+  ${statusBar('#BFC6FF', true)}
+  <div style="position:relative;padding:18px 24px;display:flex;align-items:center;justify-content:space-between">
+    <div style="width:42px;height:42px;border-radius:13px;background:rgba(255,255,255,.08);border:1px solid #3A45BA;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+      <div style="width:18px;height:2px;background:#C9CFFF"></div>
+      <div style="width:18px;height:2px;background:#C9CFFF"></div>
+      <div style="width:18px;height:2px;background:#C9CFFF"></div>
+    </div>
+    <div style="padding:9px 16px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid #3A45BA;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#E6E9FF">planeta ${state.planetIndex + 1} de ${PLANETS.length}</div>
+    <div style="display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid #3A45BA">
+      <span style="font-size:15px;line-height:1">💎</span>
+      <div style="font-size:14px;font-weight:700;color:#FFFFFF">128</div>
+    </div>
+  </div>
+  <div style="position:relative;flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:0">
+    <div style="position:absolute;left:-104px;top:300px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle at 70% 34%,#2E3AA8,#161D74 72%);opacity:.55"></div>
+    <div style="position:absolute;right:-116px;top:286px;width:196px;height:196px;border-radius:50%;background:radial-gradient(circle at 26% 32%,#2A34A0,#141B70 72%);opacity:.6"></div>
+    <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:22px;padding:0 28px">
+      <div style="width:238px;height:238px;border-radius:50%;background:radial-gradient(circle at 32% 28%,${p.from},${p.to} 70%);box-shadow:0 0 0 10px rgba(124,108,245,.16),0 0 90px rgba(124,108,245,.45);position:relative">
+        <div style="position:absolute;left:-34px;top:130px;width:306px;height:44px;border-radius:50%;border:2px solid rgba(167,230,242,.55);transform:rotate(-16deg)"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.18em;color:#A7E6F2">PLANETA ACTIVO</div>
+        <div style="font-size:34px;font-weight:800;color:#FFFFFF;letter-spacing:-.025em">${p.name}</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:120px;height:7px;border-radius:5px;background:rgba(255,255,255,.16);overflow:hidden">
+            <div style="width:${Math.round((p.done / p.total) * 100)}%;height:100%;background:linear-gradient(90deg,#FF5A1E,#FFC42E)"></div>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#C3C9F5">${p.done} / ${p.total}</div>
+        </div>
+      </div>
+      <div data-nav="7" style="height:56px;padding:0 34px;border-radius:16px;background:linear-gradient(135deg,#6C63F0,#4F46E5 55%,#3A32C9);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Entrar al planeta</div>
+    </div>
+    <div style="position:absolute;left:0;right:0;bottom:26px;display:flex;flex-direction:column;align-items:center;gap:14px">
+      <div style="display:flex;align-items:center;gap:14px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#9AA3E8">
+        <div onclick="cyclePlanet(-1)" style="cursor:pointer;font-size:15px;color:#C9CFFF">←</div>
+        <div>arrastra para ver otros planetas</div>
+        <div onclick="cyclePlanet(1)" style="cursor:pointer;font-size:15px;color:#C9CFFF">→</div>
+      </div>
+      <div style="display:flex;gap:7px;align-items:center">
+        ${PLANETS.map((_, i) => `<div onclick="jumpPlanet(${i})" style="cursor:pointer;width:${i === state.planetIndex ? 22 : 6}px;height:6px;border-radius:4px;background:${i === state.planetIndex ? '#A7E6F2' : 'rgba(255,255,255,.3)'}"></div>`).join('')}
+      </div>
+    </div>
+  </div>
+  ${bottomNavGalaxy('#2B35A2', 'rgba(11,16,67,.92)', '#8E97F0')}
+</div>`;
+};
+
+screens[7] = () => `
+<div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #3A45BA;background:#0E1666;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.45)">
+  <div style="position:absolute;inset:0;background:linear-gradient(#0C1250,#1D2596 55%,#3A45BA)"></div>
+  <div style="position:absolute;left:0;right:0;bottom:82px;height:180px;background:repeating-linear-gradient(120deg,rgba(255,255,255,.05) 0 12px,rgba(255,255,255,.02) 12px 24px)"></div>
+  ${statusBar('#BFC6FF', true)}
+  <div style="position:relative;padding:18px 24px;display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div data-back style="width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid #3A45BA;display:flex;align-items:center;justify-content:center;color:#E6E9FF">←</div>
+      <div style="display:flex;flex-direction:column">
+        <div style="font-size:18px;font-weight:800;color:#FFFFFF;letter-spacing:-.01em">Planeta Tierra</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#C3C9F5">tema visual: lugares del mundo real</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid #3A45BA">
+      <span style="font-size:14px;line-height:1">💎</span>
+      <div style="font-size:13px;font-weight:700;color:#FFFFFF">128</div>
+    </div>
+  </div>
+  <div style="position:relative;flex:1;padding:6px 24px 0">
+    <div style="position:relative;height:100%">
+      <div style="position:absolute;left:150px;top:24px;width:2px;height:72px;background:repeating-linear-gradient(#8E8E92 0 6px,transparent 6px 14px)"></div>
+      <div style="position:absolute;left:214px;top:40px;display:flex;flex-direction:column;align-items:center;gap:7px">
+        <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#FFFFFF,#A7E6F2);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -8px rgba(0,0,0,.6)">
+          <div style="width:22px;height:22px;border-radius:50%;background:#0E1666"></div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#FFFFFF">Lima</div>
+      </div>
+      <div style="position:absolute;left:96px;top:150px;display:flex;flex-direction:column;align-items:center;gap:7px">
+        <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#A7E6F2,#63C9E8);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -8px rgba(0,0,0,.6);font-size:20px;font-weight:800;color:#0E1666">✓</div>
+        <div style="font-size:12px;font-weight:700;color:#FFFFFF">Bogotá</div>
+      </div>
+      <div style="position:absolute;left:36px;top:266px;display:flex;flex-direction:column;align-items:center;gap:9px">
+        <div style="width:96px;height:96px;border-radius:26px;background:linear-gradient(135deg,#FFC42E,#FF7A1E);border:3px solid #FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 12px 26px -10px rgba(0,0,0,.65)">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;color:#5A3C05">PARADA</div>
+          <div style="font-size:15px;font-weight:800;color:#3A2606">PRINCIPAL</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#FFFFFF">Ciudad de México</div>
+      </div>
+      <div data-nav="8" style="position:absolute;left:186px;top:406px;display:flex;flex-direction:column;align-items:center;gap:7px">
+        <div style="width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,.14);border:2px dashed #A7B0FF;display:flex;align-items:center;justify-content:center;color:#E6E9FF;font-size:18px">▶</div>
+        <div style="font-size:12px;font-weight:700;color:#E6E9FF">Madrid</div>
+      </div>
+      <div style="position:absolute;left:58px;top:518px;display:flex;flex-direction:column;align-items:center;gap:7px">
+        <div style="width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid #4A55C8"></div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#BFC6FF">bloqueado</div>
+      </div>
+      <div style="position:absolute;left:214px;top:604px;display:flex;flex-direction:column;align-items:center;gap:7px">
+        <div style="width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid #4A55C8"></div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#BFC6FF">bloqueado</div>
+      </div>
+    </div>
+  </div>
+  ${bottomNavGalaxy('#3A45BA', 'rgba(12,18,80,.94)', '#A7B0FF')}
+</div>`;
+
+screens[8] = () => `
+<div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #3A45BA;background:#1D2596;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+  ${statusBar('#9AA3E8')}
+  <div style="padding:18px 24px 14px;display:flex;align-items:center;gap:12px">
+    <div data-back style="width:34px;height:34px;border-radius:11px;background:#27319E;border:1px solid #3A45BA;display:flex;align-items:center;justify-content:center;color:#AEB6EE">✕</div>
+    <div style="flex:1;display:flex;gap:6px">
+      <div style="flex:1;height:6px;border-radius:4px;background:#FF5A1E"></div>
+      <div style="flex:1;height:6px;border-radius:4px;background:#38429F"></div>
+      <div style="flex:1;height:6px;border-radius:4px;background:#38429F"></div>
+      <div style="flex:1;height:6px;border-radius:4px;background:#38429F"></div>
+    </div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9AA3E8">1/4</div>
+  </div>
+  <div style="padding:0 24px;display:flex;flex-direction:column;gap:18px;flex:1">
+    <div style="border-radius:22px;overflow:hidden;background:#4338CA;aspect-ratio:16/10;position:relative;display:flex;align-items:center;justify-content:center">
+      <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 10px,transparent 10px 20px)"></div>
+      <div style="position:relative;width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center">
+        <div style="width:0;height:0;border-left:22px solid #1D2596;border-top:13px solid transparent;border-bottom:13px solid transparent;margin-left:6px"></div>
+      </div>
+      <div style="position:absolute;left:16px;right:16px;bottom:14px;display:flex;flex-direction:column;gap:7px">
+        <div style="height:4px;border-radius:3px;background:rgba(255,255,255,.28);overflow:hidden">
+          <div style="width:34%;height:100%;background:#222B93"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#D6DBFF">
+          <div>02:14</div>
+          <div>06:30</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;color:#9AA3E8">LECCIÓN 04 · CIUDAD DE MÉXICO</div>
+      <div style="font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1.15">Cómo construir un embudo de ventas simple</div>
+      <div style="font-size:15px;line-height:1.55;color:#C3C9F5">Nova te explica las tres etapas del embudo con ejemplos de tiendas pequeñas de tu rubro.</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;background:#F2F1EA;border-radius:18px;padding:14px">
+      <div style="width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#FFC42E,#FF7A1E);flex:none;display:flex;align-items:center;justify-content:center;font-size:21px">🤖</div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="font-size:14px;font-weight:700;color:#14142B">Nova</div>
+        <div style="font-size:12px;color:#6B6F86">mentora de esta lección</div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:16px 24px 44px">
+    <div data-nav="9" style="height:58px;border-radius:16px;background:linear-gradient(135deg,#6C63F0,#4F46E5 55%,#3A32C9);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Continuar</div>
+  </div>
+</div>`;
+
+const QUIZ_OPTIONS = [
+  ['a', 'La cantidad de seguidores que tiene tu marca'],
+  ['b', 'El recorrido de descubrimiento a compra'],
+  ['c', 'Un descuento aplicado al carrito'],
+];
+
+screens[9] = () => `
+<div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #3A45BA;background:#1D2596;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+  ${statusBar('#9AA3E8')}
+  <div style="padding:18px 24px 14px;display:flex;align-items:center;gap:12px">
+    <div data-back style="width:34px;height:34px;border-radius:11px;background:#27319E;border:1px solid #3A45BA;display:flex;align-items:center;justify-content:center;color:#AEB6EE">←</div>
+    <div style="flex:1;display:flex;gap:6px">
+      <div style="flex:1;height:6px;border-radius:4px;background:#FF5A1E"></div>
+      <div style="flex:1;height:6px;border-radius:4px;background:#FF5A1E"></div>
+      <div style="flex:1;height:6px;border-radius:4px;background:#38429F"></div>
+      <div style="flex:1;height:6px;border-radius:4px;background:#38429F"></div>
+    </div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9AA3E8">2/4</div>
+  </div>
+  <div style="padding:8px 24px 0;display:flex;flex-direction:column;gap:16px;flex:1">
+    <div style="background:#4338CA;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;color:#C3C9F5">REFUERZO</div>
+      <div style="font-size:28px;font-weight:800;color:#FFFFFF;letter-spacing:-.02em;line-height:1.18">¿Qué es un embudo de ventas?</div>
+      <div style="font-size:15px;line-height:1.55;color:#D6DBFF">Es el recorrido que hace una persona desde que te descubre hasta que te compra. Cada etapa pierde gente: por eso se ve como un embudo.</div>
+    </div>
+    <div style="font-size:16px;font-weight:700">Elige la respuesta correcta</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      ${QUIZ_OPTIONS.map(([key, label]) => {
+        const on = state.quiz === key;
+        return `<div data-select="quiz" data-key="${key}" style="border-radius:16px;background:${on ? '#A7E6F2' : '#F2F1EA'};padding:16px 18px;display:flex;gap:14px;align-items:center">
+          <div style="width:28px;height:28px;border-radius:9px;background:${on ? '#4F4FE8' : '#E8E5DA'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:${on ? '#FFFFFF' : '#6B6F86'};flex:none">${key.toUpperCase()}</div>
+          <div style="font-size:15px;font-weight:${on ? 700 : 400};line-height:1.35;color:#14142B">${label}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;padding:14px 16px;border-radius:16px;background:#F2F1EA;border:1px dashed #C6C9E6">
+      <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#FFC42E,#FF7A1E);flex:none;display:flex;align-items:center;justify-content:center;font-size:14px">🤖</div>
+      <div style="font-size:13px;line-height:1.45;color:#4B4F66">Nova puede explicarte esto otra vez por 2 💠</div>
+    </div>
+  </div>
+  <div style="padding:16px 24px 44px">
+    <div data-nav="10" style="height:58px;border-radius:16px;background:linear-gradient(135deg,#6C63F0,#4F46E5 55%,#3A32C9);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Comprobar</div>
+  </div>
+</div>`;
+
+screens[10] = () => {
+  const si = state.caseDecision === 'si';
+  const no = state.caseDecision === 'no';
+  return `
+<div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #3A45BA;background:#1D2596;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+  ${statusBar('#9AA3E8')}
+  <div style="padding:18px 24px 14px;display:flex;align-items:center;gap:12px">
+    <div data-back style="width:34px;height:34px;border-radius:11px;background:#27319E;border:1px solid #3A45BA;display:flex;align-items:center;justify-content:center;color:#AEB6EE">←</div>
+    <div style="flex:1;display:flex;gap:6px">
+      <div style="flex:1;height:6px;border-radius:4px;background:#FF5A1E"></div>
+      <div style="flex:1;height:6px;border-radius:4px;background:#FF5A1E"></div>
+      <div style="flex:1;height:6px;border-radius:4px;background:#FF5A1E"></div>
+      <div style="flex:1;height:6px;border-radius:4px;background:#38429F"></div>
+    </div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9AA3E8">3/4</div>
+  </div>
+  <div style="padding:8px 24px 0;display:flex;flex-direction:column;gap:16px;flex:1">
+    <div style="border-radius:22px;overflow:hidden;background:#F2F1EA">
+      <div style="height:150px;background:linear-gradient(135deg,#E4DFF6,#D6CFF0);display:flex;align-items:flex-end;justify-content:center;padding-bottom:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6B6F86">imagen del caso</div>
+      </div>
+      <div style="padding:18px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:#6B6F86">CASO REAL · NOMBRE CAMBIADO</div>
+        <div style="font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.15;color:#14142B">Pepito compra Kola</div>
+        <div style="font-size:15px;line-height:1.55;color:#4B4F66">La marca vende 80% por WhatsApp. El equipo quiere invertir todo el presupuesto del mes en anuncios para llegar a público nuevo, sin tocar la atención de los clientes que ya escriben.</div>
+      </div>
+    </div>
+    <div style="font-size:17px;font-weight:800;letter-spacing:-.01em">¿Tomarías esa decisión?</div>
+    <div style="display:flex;gap:12px">
+      <div data-select="case" data-key="si" style="flex:1;height:72px;border-radius:18px;background:${si ? '#A7E6F2' : '#F2F1EA'};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:${si ? 800 : 700};color:${si ? '#14142B' : '#6B6F86'}">Sí</div>
+      <div data-select="case" data-key="no" style="flex:1;height:72px;border-radius:18px;background:${no ? '#A7E6F2' : '#F2F1EA'};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:${no ? 800 : 700};color:${no ? '#14142B' : '#6B6F86'}">No</div>
+    </div>
+    <div style="padding:16px;border-radius:18px;background:#4338CA;display:flex;flex-direction:column;gap:8px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:#C3C9F5">PISTA</div>
+      <div style="font-size:14px;line-height:1.5;color:#EDEFFF">Piensa en qué etapa del embudo está fallando la marca antes de decidir dónde poner el dinero.</div>
+    </div>
+  </div>
+  <div style="padding:16px 24px 44px">
+    <div data-nav="11" style="height:58px;border-radius:16px;background:linear-gradient(135deg,#6C63F0,#4F46E5 55%,#3A32C9);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Confirmar decisión</div>
+  </div>
+</div>`;
+};
+
+screens[11] = () => `
+<div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #3A45BA;background:#1D2596;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+  ${statusBar('#9AA3E8')}
+  <div style="padding:18px 24px 14px;display:flex;align-items:center;gap:12px">
+    <div data-back style="width:34px;height:34px;border-radius:11px;background:#27319E;border:1px solid #3A45BA;display:flex;align-items:center;justify-content:center;color:#AEB6EE">←</div>
+    <div style="flex:1;display:flex;gap:6px">
+      <div style="flex:1;height:6px;border-radius:4px;background:#FF5A1E"></div>
+      <div style="flex:1;height:6px;border-radius:4px;background:#FF5A1E"></div>
+      <div style="flex:1;height:6px;border-radius:4px;background:#FF5A1E"></div>
+      <div style="flex:1;height:6px;border-radius:4px;background:#FF5A1E"></div>
+    </div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9AA3E8">4/4</div>
+  </div>
+  <div style="padding:8px 24px 0;display:flex;flex-direction:column;gap:14px;flex:1;overflow:hidden">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;color:#9AA3E8">RESOLUCIÓN · EVALUACIÓN FINAL</div>
+    <div style="display:flex;gap:10px;align-items:flex-end">
+      <div style="width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#FFC42E,#FF7A1E);flex:none;display:flex;align-items:center;justify-content:center;font-size:17px">🤖</div>
+      <div style="background:#F2F1EA;border-radius:18px 18px 18px 5px;padding:14px 16px;font-size:14px;line-height:1.45;max-width:250px;color:#14142B">¿Cuál es la primera etapa del embudo?</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:flex-end;justify-content:flex-end">
+      <div style="background:#4338CA;color:#FFFFFF;border-radius:18px 18px 5px 18px;padding:14px 16px;font-size:14px;line-height:1.45;max-width:230px">Descubrimiento</div>
+      <div style="width:26px;height:26px;border-radius:50%;background:#4F4FE8;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none">✓</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:flex-end">
+      <div style="width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#FFC42E,#FF7A1E);flex:none;display:flex;align-items:center;justify-content:center;font-size:17px">🤖</div>
+      <div style="background:#F2F1EA;border-radius:18px 18px 18px 5px;padding:14px 16px;font-size:14px;line-height:1.45;max-width:250px;color:#14142B">Si nadie te compra tras escribirte, ¿qué etapa revisas?</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:flex-end;justify-content:flex-end">
+      <div style="background:#EDEAE0;border-radius:18px 18px 5px 18px;padding:14px 16px;font-size:14px;line-height:1.45;max-width:230px;color:#9296A6">Descubrimiento</div>
+      <div style="width:26px;height:26px;border-radius:50%;background:#EDEAE0;border:1.5px solid #C9C6BC;color:#9296A6;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none">✕</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:flex-end">
+      <div style="width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#FFC42E,#FF7A1E);flex:none;display:flex;align-items:center;justify-content:center;font-size:17px">🤖</div>
+      <div style="background:#F2F1EA;border-radius:18px 18px 18px 5px;padding:14px 16px;font-size:14px;line-height:1.45;max-width:250px;color:#14142B">Era conversión. Última: ¿qué mides para saber si mejoró?</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:flex-end;justify-content:flex-end">
+      <div style="background:#4338CA;color:#FFFFFF;border-radius:18px 18px 5px 18px;padding:14px 16px;font-size:14px;line-height:1.45;max-width:230px">Ventas sobre consultas</div>
+      <div style="width:26px;height:26px;border-radius:50%;background:#4F4FE8;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none">✓</div>
+    </div>
+    <div style="margin-top:auto;background:#F2F1EA;border-radius:22px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="font-size:20px;font-weight:800;letter-spacing:-.02em;color:#14142B">Lección aprobada</div>
+        <div style="font-size:13px;color:#6B6F86">2 de 3 correctas</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:14px;background:#E8E5DA">
+        <span style="font-size:19px;line-height:1">💎</span>
+        <div style="font-size:18px;font-weight:800;color:#14142B">+15</div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:16px 24px 44px">
+    <div onclick="finishLesson()" style="height:58px;border-radius:16px;background:linear-gradient(135deg,#6C63F0,#4F46E5 55%,#3A32C9);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Volver al camino</div>
+  </div>
+</div>`;
+
+screens[12] = () => `
+<div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #3A45BA;background:#1D2596;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+  ${statusBar('#9AA3E8')}
+  <div style="padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #3A45BA;background:#27319E">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div data-back style="width:34px;height:34px;border-radius:11px;background:#182182;border:1px solid #3A45BA;display:flex;align-items:center;justify-content:center;color:#AEB6EE;flex:none">←</div>
+      <div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFC42E,#FF7A1E);display:flex;align-items:center;justify-content:center;font-size:22px">🤖</div>
+      <div style="display:flex;flex-direction:column">
+        <div style="font-size:17px;font-weight:800;letter-spacing:-.01em">Nova</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9AA3E8">a bordo de la nave</div>
+      </div>
+    </div>
+    <div data-nav="13" style="display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:999px;background:#182182;border:1px solid #3A45BA">
+      <span style="font-size:15px;line-height:1">💎</span>
+      <div style="font-size:14px;font-weight:700">6</div>
+    </div>
+  </div>
+  <div style="flex:1;padding:18px 24px;display:flex;flex-direction:column;gap:12px;overflow:hidden">
+    <div style="align-self:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9AA3E8;background:#222B93;padding:6px 12px;border-radius:999px">cada mensaje cuesta 2 diamantes</div>
+    <div style="display:flex;gap:10px;align-items:flex-end">
+      <div style="width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,#FFC42E,#FF7A1E);flex:none;display:flex;align-items:center;justify-content:center;font-size:15px">🤖</div>
+      <div style="background:#F2F1EA;border-radius:18px 18px 18px 5px;padding:14px 16px;font-size:14px;line-height:1.5;max-width:255px;color:#14142B">Hola Camila. Vi que terminaste el embudo de ventas. ¿Quieres aplicarlo a tu tienda de ropa?</div>
+    </div>
+    <div style="align-self:flex-end;background:#4338CA;color:#FFFFFF;border-radius:18px 18px 5px 18px;padding:14px 16px;font-size:14px;line-height:1.5;max-width:240px">Sí, vendo por Instagram pero casi nadie me escribe</div>
+    <div style="display:flex;gap:10px;align-items:flex-end">
+      <div style="width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,#FFC42E,#FF7A1E);flex:none;display:flex;align-items:center;justify-content:center;font-size:15px">🤖</div>
+      <div style="background:#F2F1EA;border-radius:18px 18px 18px 5px;padding:14px 16px;font-size:14px;line-height:1.5;max-width:255px;color:#14142B">Entonces tu problema está en descubrimiento, no en conversión. Empecemos por tus tres publicaciones con más alcance.</div>
+    </div>
+    <div style="align-self:flex-end;display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9AA3E8">
+      <span style="font-size:11px;line-height:1">💎</span>
+      <div>−2 · quedan 6</div>
+    </div>
+  </div>
+  <div style="padding:14px 20px 40px;border-top:1px solid #3A45BA;background:#27319E;display:flex;align-items:center;gap:10px">
+    <div style="flex:1;height:50px;border-radius:999px;background:#FFFFFF;border:1px solid #3A45BA;display:flex;align-items:center;padding:0 18px;font-size:14px;color:#8087B4">Escribe a Nova…</div>
+    <div style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#7C6CF5,#4338CA);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:16px">↑</div>
+  </div>
+</div>`;
+
+screens[13] = () => `
+<div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #3A45BA;background:#1D2596;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+  ${statusBar('#9AA3E8')}
+  <div style="padding:16px 24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #3A45BA;background:#27319E;opacity:.5">
+    <div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFC42E,#FF7A1E);display:flex;align-items:center;justify-content:center;font-size:22px">🤖</div>
+    <div style="font-size:17px;font-weight:800">Nova</div>
+  </div>
+  <div style="flex:1;padding:18px 24px;display:flex;flex-direction:column;gap:12px;opacity:.35">
+    <div style="background:#F2F1EA;border-radius:18px 18px 18px 5px;padding:14px 16px;font-size:14px;max-width:255px;color:#14142B">Empecemos por tus tres publicaciones…</div>
+    <div style="align-self:flex-end;background:#4338CA;color:#FFFFFF;border-radius:18px 18px 5px 18px;padding:14px 16px;font-size:14px;max-width:230px">Listo, ¿y después?</div>
+  </div>
+  <div style="background:#F2F1EA;border-radius:28px 28px 0 0;padding:28px 24px 40px;display:flex;flex-direction:column;gap:18px;box-shadow:0 -20px 40px -24px rgba(0,0,0,.35)">
+    <div data-back style="width:44px;height:4px;border-radius:3px;background:#D8D4C5;align-self:center"></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center">
+      <div style="width:62px;height:62px;border-radius:18px;background:#E8E5DA;display:flex;align-items:center;justify-content:center">
+        <span style="font-size:26px;line-height:1;opacity:.55">💎</span>
+      </div>
+      <div style="font-size:24px;font-weight:800;letter-spacing:-.02em;color:#14142B">Te quedaste sin diamantes</div>
+      <div style="font-size:15px;line-height:1.5;color:#6B6F86;max-width:30ch">Gana más completando lecciones y planetas, o pasa a Premium y recibe diamantes cada semana.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div data-nav="14" style="height:56px;border-radius:16px;background:linear-gradient(135deg,#6C63F0,#4F46E5 55%,#3A32C9);display:flex;align-items:center;justify-content:center;gap:8px;color:#FFFFFF;font-size:16px;font-weight:700">Ver beneficios Premium →</div>
+      <div data-nav="7" style="height:56px;border-radius:16px;background:#E8E5DA;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:#4B4F66">Seguir una lección y ganar 💠</div>
+    </div>
+  </div>
+</div>`;
+
+screens[14] = () => `
+<div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #3A45BA;background:#1D2596;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+  ${statusBar('#9AA3E8')}
+  <div style="padding:18px 24px 0;display:flex;justify-content:flex-end">
+    <div data-back style="width:34px;height:34px;border-radius:11px;background:#27319E;border:1px solid #3A45BA;display:flex;align-items:center;justify-content:center;color:#AEB6EE">✕</div>
+  </div>
+  <div style="padding:14px 24px 0;display:flex;flex-direction:column;gap:8px">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:#9AA3E8">LEVELUP PREMIUM</div>
+    <div style="font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.1">Explora sin<br>quedarte sin combustible</div>
+  </div>
+  <div style="padding:20px 24px 0">
+    <div style="background:#4338CA;border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:flex-end;gap:8px">
+        <div style="font-size:44px;font-weight:800;color:#FFFFFF;letter-spacing:-.03em;line-height:1">S/ 29</div>
+        <div style="font-size:15px;color:#C3C9F5;padding-bottom:7px">/ mes</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        ${['Diamantes cada semana', '2x diamantes por lección', 'Personaliza tu animal', 'Personaliza tu chat con Nova'].map(t => `<div style="display:flex;gap:12px;align-items:center">
+          <div style="width:24px;height:24px;border-radius:50%;background:#A7E6F2;color:#0E1666;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none">✓</div>
+          <div style="font-size:15px;color:#FFFFFF;font-weight:600">${t}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>
+  <div style="padding:16px 24px 0;display:flex;gap:12px">
+    <div style="flex:1;background:#F2F1EA;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:6px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6B6F86">GRATIS</div>
+      <div style="font-size:15px;font-weight:700;color:#14142B">Diamantes que ganas</div>
+      <div style="font-size:12px;color:#6B6F86">solo por avanzar</div>
+    </div>
+    <div style="flex:1;background:#A7E6F2;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:6px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#2B3050">PREMIUM</div>
+      <div style="font-size:15px;font-weight:700;color:#14142B">N 💠 por semana</div>
+      <div style="font-size:12px;color:#2B3050">cantidad por definir</div>
+    </div>
+  </div>
+  <div style="flex:1"></div>
+  <div style="padding:16px 24px 44px;display:flex;flex-direction:column;gap:12px">
+    <div onclick="activatePremium()" style="height:58px;border-radius:16px;background:linear-gradient(135deg,#6C63F0,#4F46E5 55%,#3A32C9);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Activar Premium</div>
+    <div style="font-size:12px;color:#9AA3E8;text-align:center">Puedes cancelar cuando quieras</div>
+  </div>
+</div>`;
+
+// ---------------------------------------------------------------------
+// Render + delegación de eventos
+// ---------------------------------------------------------------------
+function render() {
+  const phone = document.getElementById('phone');
+  phone.classList.add('fade-out');
+  setTimeout(() => {
+    phone.innerHTML = screens[state.screen]();
+    phone.classList.remove('fade-out');
+  }, 130);
+
+  document.getElementById('screen-title').textContent = SCREEN_META[state.screen];
+  document.getElementById('back-fab').classList.toggle('show', state.history.length > 0);
+
+  const strip = document.getElementById('qa-strip');
+  strip.innerHTML = '<div class="qa-label">Saltar a cualquier pantalla</div>' +
+    SCREEN_META.map((_, i) => `<div class="qa-dot${i === state.screen ? ' active' : ''}" onclick="qaJump(${i})">${String(i).padStart(2, '0')}</div>`).join('');
+}
+
+document.getElementById('phone-wrap').addEventListener('click', (e) => {
+  const nav = e.target.closest('[data-nav]');
+  const back = e.target.closest('[data-back]');
+  const select = e.target.closest('[data-select]');
+  if (select) {
+    const group = select.dataset.select;
+    const key = select.dataset.key;
+    if (group === 'business') toggleBusiness(key);
+    else if (group === 'quiz') setQuiz(key);
+    else if (group === 'case') setCase(key);
+    return;
+  }
+  if (nav) { go(parseInt(nav.dataset.nav, 10)); return; }
+  if (back) { goBack(); return; }
+});
+
+render();
+</script>
+</body>
+</html>

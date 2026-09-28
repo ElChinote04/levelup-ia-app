@@ -1,0 +1,5 @@
+{
+  "buildCommand": "echo 'Static export already built, nothing to compile'",
+  "installCommand": "echo 'No dependencies needed to serve the static export'",
+  "outputDirectory": "deploy"
+}

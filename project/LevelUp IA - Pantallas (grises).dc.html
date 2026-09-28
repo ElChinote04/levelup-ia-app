@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  body { margin: 0; background: #EDEDEB; font-family: Manrope, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: #1A1A19; }
+  a:hover { color: #6E6E6B; }
+</style>
+</helmet>
+<div style="padding:64px 56px 96px;display:flex;flex-direction:column;gap:56px;background:#EDEDEB;color:#1A1A19">
+
+  <div style="display:flex;flex-direction:column;gap:28px;max-width:1100px">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#8E8E8C">LevelUp IA! · Rediseño exploración espacial · 15 pantallas</div>
+    <div style="font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1.05;max-width:20ch">Pantallas en escala de grises</div>
+    <div style="font-size:19px;line-height:1.55;color:#4A4A48;max-width:62ch;text-wrap:pretty">Toda la estructura del documento maestro, construida con una paleta 100% neutra. Cada gris ocupa el lugar de un color por decidir: revisen con el equipo qué color va en cada ranura y luego se reemplaza un solo valor por ranura.</div>
+
+    <sc-if value="{{ showLegend }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:0;background:#FFFFFF;border:1px solid #DEDEDC;border-radius:20px;overflow:hidden;max-width:860px">
+        <div style="padding:18px 24px;border-bottom:1px solid #E3E3E1;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8E8E8C">Ranuras de color — gris usado / rol / color original del sistema</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;background:#E3E3E1">
+          <div style="display:flex;gap:14px;align-items:center;padding:16px 20px;background:#FFFFFF">
+            <div style="width:34px;height:34px;border-radius:9px;flex:none;background:linear-gradient(135deg,#8A8A87,#5E5E5B 50%,#333331);"></div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <div style="font-size:14px;font-weight:700">CTA principal</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8E8E8C">era azul→violeta→magenta</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:center;padding:16px 20px;background:#FFFFFF">
+            <div style="width:34px;height:34px;border-radius:9px;flex:none;background:#26262A"></div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <div style="font-size:14px;font-weight:700">Tarjeta de acento</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8E8E8C">era navy-violeta</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:center;padding:16px 20px;background:#FFFFFF">
+            <div style="width:34px;height:34px;border-radius:9px;flex:none;background:#0E0E10"></div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <div style="font-size:14px;font-weight:700">Fondo galaxia</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8E8E8C">era #0A0E27</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:center;padding:16px 20px;background:#FFFFFF">
+            <div style="width:34px;height:34px;border-radius:9px;flex:none;background:#C9C9CE"></div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <div style="font-size:14px;font-weight:700">Diamantes (moneda)</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8E8E8C">se sugería cian cristalino</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:center;padding:16px 20px;background:#FFFFFF">
+            <div style="width:34px;height:34px;border-radius:9px;flex:none;background:#A8A8A4"></div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <div style="font-size:14px;font-weight:700">Nova (mentora IA)</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8E8E8C">era degradado ámbar</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:center;padding:16px 20px;background:#FFFFFF">
+            <div style="width:34px;height:34px;border-radius:9px;flex:none;background:#6E6E6B"></div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <div style="font-size:14px;font-weight:700">Planeta activo</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8E8E8C">paleta propia por mundo</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:center;padding:16px 20px;background:#FFFFFF">
+            <div style="width:34px;height:34px;border-radius:9px;flex:none;background:#3A3A3C"></div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <div style="font-size:14px;font-weight:700">Planeta bloqueado</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8E8E8C">gris — ya definido en pizarra</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:center;padding:16px 20px;background:#FFFFFF">
+            <div style="width:34px;height:34px;border-radius:9px;flex:none;background:#D8D8D4;border:1px solid #CFCFCB"></div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <div style="font-size:14px;font-weight:700">Resaltador de título</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8E8E8C">era lavanda</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:56px 44px;align-items:flex-start">
+
+    <!-- 0 -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">00</div>
+        <div style="font-size:18px;font-weight:700">Animación de apertura</div>
+      </div>
+      <sc-if value="{{ showTags }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#6E6E6B;background:#E3E3E1;border-radius:4px;padding:4px 8px;align-self:flex-start">TU EXPLICACIÓN</div>
+      </sc-if>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #DEDEDC;background:#0E0E10;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.45)">
+        <div style="position:absolute;inset:0;background:radial-gradient(1px 1px at 18% 12%,#5A5A5E 50%,transparent 51%),radial-gradient(1px 1px at 72% 20%,#6E6E72 50%,transparent 51%),radial-gradient(1.5px 1.5px at 40% 34%,#7A7A7E 50%,transparent 51%),radial-gradient(1px 1px at 86% 58%,#55555A 50%,transparent 51%),radial-gradient(1px 1px at 26% 74%,#66666A 50%,transparent 51%),radial-gradient(1.5px 1.5px at 60% 88%,#4E4E52 50%,transparent 51%)"></div>
+        <div style="position:relative;display:flex;justify-content:space-between;padding:16px 28px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9A9A9E">
+          <div>9:41</div>
+          <div>▮▮▮</div>
+        </div>
+        <div style="position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px">
+          <div style="width:132px;height:132px;border-radius:50%;border:2px solid #6E6E72;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 34% 30%,#4A4A4E,#1A1A1E)">
+            <div style="width:62px;height:62px;border-radius:16px;background:linear-gradient(135deg,#C9C9CE,#7A7A7E);transform:rotate(45deg)"></div>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:#8E8E92;text-align:center;max-width:26ch">PLACEHOLDER · LOGO ANIMÁNDOSE / ARMÁNDOSE</div>
+        </div>
+        <div style="position:relative;display:flex;flex-direction:column;gap:12px;padding:0 28px 48px">
+          <div style="height:56px;border-radius:16px;background:linear-gradient(135deg,#9A9A97,#5E5E5B 55%,#333331);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Sign in</div>
+          <div style="height:56px;border-radius:16px;border:1px solid #55555A;display:flex;align-items:center;justify-content:center;color:#E8E8EA;font-size:17px;font-weight:600">Log in</div>
+        </div>
+      </div>
+      <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:13px;line-height:1.5;color:#6E6E6B;text-wrap:pretty">Al terminar la animación aparecen los dos botones. El logo definitivo está pendiente.</div>
+      </sc-if>
+    </div>
+
+    <!-- 1 -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">01</div>
+        <div style="font-size:18px;font-weight:700">Welcome / Login</div>
+      </div>
+      <sc-if value="{{ showTags }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#6E6E6B;background:#E3E3E1;border-radius:4px;padding:4px 8px;align-self:flex-start">PIZARRA</div>
+      </sc-if>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #DEDEDC;background:#F5F5F4;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+        <div style="display:flex;justify-content:space-between;padding:16px 28px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">
+          <div>9:41</div>
+          <div>▮▮▮</div>
+        </div>
+        <div style="padding:40px 28px 0;font-size:13px;font-family:'IBM Plex Mono',monospace;letter-spacing:.2em;color:#8E8E8C">LOGIN</div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:0 28px">
+          <div style="width:104px;height:104px;border-radius:50%;border:3px solid #E3E3E1;border-top-color:#5E5E5B;display:flex;align-items:center;justify-content:center">
+            <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#9A9A97,#4A4A48);transform:rotate(45deg)"></div>
+          </div>
+          <div style="font-size:30px;font-weight:800;letter-spacing:-.02em">Sign in</div>
+          <div style="width:100%;display:flex;flex-direction:column;gap:12px">
+            <div style="height:54px;border-radius:14px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;padding:0 18px;color:#8E8E8C;font-size:15px">Correo</div>
+            <div style="height:54px;border-radius:14px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;justify-content:space-between;padding:0 18px;color:#8E8E8C;font-size:15px">
+              <div>Contraseña</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:12px">ver</div>
+            </div>
+          </div>
+          <div style="width:100%;height:56px;border-radius:16px;background:linear-gradient(135deg,#9A9A97,#5E5E5B 55%,#333331);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Entrar</div>
+          <div style="font-size:14px;color:#8E8E8C">¿No tienes cuenta? <span style="color:#1A1A19;font-weight:700;border-bottom:1px solid #C4C4C1">Crea una</span></div>
+        </div>
+      </div>
+      <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:13px;line-height:1.5;color:#6E6E6B;text-wrap:pretty">Destino de “Log in” en la pantalla 00: usuarios con cuenta existente.</div>
+      </sc-if>
+    </div>
+
+    <!-- 2 -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">02</div>
+        <div style="font-size:18px;font-weight:700">Crea tu cuenta</div>
+      </div>
+      <sc-if value="{{ showTags }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#6E6E6B;background:#E3E3E1;border-radius:4px;padding:4px 8px;align-self:flex-start">PIZARRA + TU EXPLICACIÓN</div>
+      </sc-if>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #DEDEDC;background:#F5F5F4;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+        <div style="display:flex;justify-content:space-between;padding:16px 28px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">
+          <div>9:41</div>
+          <div>▮▮▮</div>
+        </div>
+        <div style="padding:36px 28px 0;display:flex;flex-direction:column;gap:20px">
+          <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#9A9A97,#4A4A48);display:flex;align-items:center;justify-content:center">
+            <div style="width:26px;height:26px;background:#FFFFFF;transform:rotate(45deg);border-radius:5px"></div>
+          </div>
+          <div style="font-size:34px;font-weight:800;letter-spacing:-.025em;line-height:1.1">Crea tu<br /><span style="background:#D8D8D4;padding:0 6px;border-radius:5px">cuenta</span></div>
+        </div>
+        <div style="padding:28px;display:flex;flex-direction:column;gap:12px">
+          <div style="height:56px;border-radius:14px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;justify-content:center;gap:12px;font-size:16px;font-weight:600">
+            <div style="width:22px;height:22px;border-radius:50%;background:conic-gradient(#3A3A3C 0 25%,#8E8E8C 0 50%,#C4C4C1 0 75%,#6E6E6B 0)"></div>
+            <div>Continuar con Google</div>
+          </div>
+          <div style="height:56px;border-radius:14px;background:#1A1A19;color:#FFFFFF;display:flex;align-items:center;justify-content:center;gap:12px;font-size:16px;font-weight:600">
+            <div style="width:18px;height:18px;border-radius:50% 50% 45% 45%;background:#FFFFFF"></div>
+            <div>Continuar con Apple</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 0">
+            <div style="flex:1;height:1px;background:#E3E3E1"></div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8E8E8C">o con tu correo</div>
+            <div style="flex:1;height:1px;background:#E3E3E1"></div>
+          </div>
+          <div style="height:54px;border-radius:14px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;padding:0 18px;color:#8E8E8C;font-size:15px">Nombre</div>
+          <div style="height:54px;border-radius:14px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;padding:0 18px;color:#8E8E8C;font-size:15px">Correo</div>
+          <div style="height:54px;border-radius:14px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;padding:0 18px;color:#8E8E8C;font-size:15px">Contraseña</div>
+          <div style="height:56px;margin-top:8px;border-radius:16px;background:linear-gradient(135deg,#9A9A97,#5E5E5B 55%,#333331);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Continuar</div>
+          <div style="font-size:12px;line-height:1.5;color:#8E8E8C;text-align:center;padding:0 12px">Al continuar aceptas los términos y la política de privacidad.</div>
+        </div>
+      </div>
+      <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:13px;line-height:1.5;color:#6E6E6B;text-wrap:pretty">Los campos manuales aparecen debajo si no se elige Google ni Apple. Se mantiene el ícono con gradiente y el resaltador del título.</div>
+      </sc-if>
+    </div>
+
+    <!-- 3 -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">03</div>
+        <div style="font-size:18px;font-weight:700">Tipo de negocio</div>
+      </div>
+      <sc-if value="{{ showTags }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#6E6E6B;background:#E3E3E1;border-radius:4px;padding:4px 8px;align-self:flex-start">PIZARRA + TU EXPLICACIÓN</div>
+      </sc-if>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #DEDEDC;background:#F5F5F4;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+        <div style="display:flex;justify-content:space-between;padding:16px 28px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">
+          <div>9:41</div>
+          <div>▮▮▮</div>
+        </div>
+        <div style="padding:24px 28px 0;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;gap:6px">
+            <div style="width:34px;height:5px;border-radius:3px;background:#3A3A3C"></div>
+            <div style="width:34px;height:5px;border-radius:3px;background:#3A3A3C"></div>
+            <div style="width:34px;height:5px;border-radius:3px;background:#DEDEDC"></div>
+          </div>
+          <div style="padding:9px 18px;border-radius:999px;background:#FFFFFF;border:1px solid #E3E3E1;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;color:#6E6E6B">SKIP</div>
+        </div>
+        <div style="padding:28px 28px 18px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:32px;font-weight:800;letter-spacing:-.025em;line-height:1.12">Tu idea de <span style="background:#D8D8D4;padding:0 6px;border-radius:5px">negocio</span></div>
+          <div style="font-size:15px;line-height:1.5;color:#6E6E6B">Adaptamos lecciones, ejemplos y casos a tu rubro.</div>
+        </div>
+        <div style="padding:0 28px;display:flex;flex-direction:column;gap:10px;flex:1">
+          <div style="height:62px;border-radius:16px;background:#FFFFFF;border:2px solid #3A3A3C;display:flex;align-items:center;justify-content:space-between;padding:0 18px">
+            <div style="font-size:16px;font-weight:700">E-commerce</div>
+            <div style="width:24px;height:24px;border-radius:7px;background:#3A3A3C;display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:13px;font-weight:700">✓</div>
+          </div>
+          <div style="height:62px;border-radius:16px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;justify-content:space-between;padding:0 18px">
+            <div style="font-size:16px;font-weight:600">Skincare y belleza</div>
+            <div style="width:24px;height:24px;border-radius:7px;border:1.5px solid #D4D4D1"></div>
+          </div>
+          <div style="height:62px;border-radius:16px;background:#FFFFFF;border:2px solid #3A3A3C;display:flex;align-items:center;justify-content:space-between;padding:0 18px">
+            <div style="font-size:16px;font-weight:700">Ropa y accesorios</div>
+            <div style="width:24px;height:24px;border-radius:7px;background:#3A3A3C;display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:13px;font-weight:700">✓</div>
+          </div>
+          <div style="height:62px;border-radius:16px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;justify-content:space-between;padding:0 18px">
+            <div style="font-size:16px;font-weight:600">Comida y bebidas</div>
+            <div style="width:24px;height:24px;border-radius:7px;border:1.5px solid #D4D4D1"></div>
+          </div>
+          <div style="height:62px;border-radius:16px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;justify-content:space-between;padding:0 18px">
+            <div style="font-size:16px;font-weight:600">Servicios y consultoría</div>
+            <div style="width:24px;height:24px;border-radius:7px;border:1.5px solid #D4D4D1"></div>
+          </div>
+          <div style="height:62px;border-radius:16px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;justify-content:space-between;padding:0 18px">
+            <div style="font-size:16px;font-weight:600">Aún no lo defino</div>
+            <div style="width:24px;height:24px;border-radius:7px;border:1.5px solid #D4D4D1"></div>
+          </div>
+        </div>
+        <div style="padding:20px 28px 44px">
+          <div style="height:58px;border-radius:16px;background:linear-gradient(135deg,#9A9A97,#5E5E5B 55%,#333331);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Comenzar</div>
+        </div>
+      </div>
+      <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:13px;line-height:1.5;color:#6E6E6B;text-wrap:pretty">Selección múltiple con checkbox; SKIP salta el paso.</div>
+      </sc-if>
+    </div>
+
+    <!-- 4 -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">04</div>
+        <div style="font-size:18px;font-weight:700">Dashboard principal</div>
+      </div>
+      <sc-if value="{{ showTags }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#6E6E6B;background:#E3E3E1;border-radius:4px;padding:4px 8px;align-self:flex-start">PIZARRA + TU EXPLICACIÓN</div>
+      </sc-if>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #DEDEDC;background:#F5F5F4;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+        <div style="display:flex;justify-content:space-between;padding:16px 28px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">
+          <div>9:41</div>
+          <div>▮▮▮</div>
+        </div>
+        <div style="padding:18px 24px 14px;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:46px;height:46px;border-radius:50%;background:#DEDEDC;border:2px solid #FFFFFF;box-shadow:0 0 0 1px #E3E3E1;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:9px;color:#8E8E8C">AVT</div>
+            <div style="display:flex;flex-direction:column">
+              <div style="font-size:12px;color:#8E8E8C">Hola,</div>
+              <div style="font-size:17px;font-weight:700;letter-spacing:-.01em">Camila</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:#FFFFFF;border:1px solid #E3E3E1">
+            <div style="width:14px;height:14px;background:#C9C9CE;transform:rotate(45deg);border-radius:3px"></div>
+            <div style="font-size:15px;font-weight:700">128</div>
+          </div>
+        </div>
+        <div style="padding:0 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+          <div style="height:96px;border-radius:18px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+            <div style="display:flex;gap:-6px"><div style="width:16px;height:16px;border-radius:50%;background:#B4B4B1"></div><div style="width:16px;height:16px;border-radius:50%;background:#8E8E8C;margin-left:-5px"></div></div>
+            <div style="font-size:13px;font-weight:700">Amigos</div>
+          </div>
+          <div style="height:96px;border-radius:18px;background:#26262A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+            <div style="width:18px;height:18px;border-radius:50%;background:#C9C9CE"></div>
+            <div style="font-size:13px;font-weight:700;color:#FFFFFF">Logros</div>
+          </div>
+          <div style="height:96px;border-radius:18px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+            <div style="width:18px;height:14px;border-radius:3px;border:2px solid #8E8E8C"></div>
+            <div style="font-size:13px;font-weight:700">Tienda</div>
+          </div>
+        </div>
+        <div style="padding:18px 24px 6px;display:flex;justify-content:space-between">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="width:52px;height:52px;border-radius:50%;background:#FFFFFF;border:1px solid #E3E3E1"></div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#8E8E8C">RACHA</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="width:52px;height:52px;border-radius:50%;background:#FFFFFF;border:1px solid #E3E3E1"></div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#8E8E8C">RETO</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="width:52px;height:52px;border-radius:50%;background:#FFFFFF;border:1px solid #E3E3E1"></div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#8E8E8C">RANKING</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="width:52px;height:52px;border-radius:50%;background:#FFFFFF;border:1px solid #E3E3E1"></div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#8E8E8C">NOVA</div>
+          </div>
+        </div>
+        <div style="padding:6px 24px 0;display:flex;align-items:baseline;justify-content:space-between">
+          <div style="font-size:17px;font-weight:800;letter-spacing:-.01em">Noticias de tu rubro</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8E8E8C">E-commerce</div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:12px 24px 0;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;gap:14px;background:#FFFFFF;border:1px solid #E3E3E1;border-radius:18px;padding:12px">
+            <div style="width:88px;height:74px;border-radius:12px;flex:none;background:repeating-linear-gradient(135deg,#E8E8E6 0 7px,#DCDCDA 7px 14px);display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#8E8E8C">foto</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+              <div style="font-size:14px;font-weight:700;line-height:1.3;text-wrap:pretty">Los envíos en 24h ya definen la conversión en tiendas pequeñas</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8E8E8C;text-decoration:underline">leer la noticia ↗</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;background:#FFFFFF;border:1px solid #E3E3E1;border-radius:18px;padding:12px">
+            <div style="width:88px;height:74px;border-radius:12px;flex:none;background:repeating-linear-gradient(135deg,#E8E8E6 0 7px,#DCDCDA 7px 14px);display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#8E8E8C">foto</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+              <div style="font-size:14px;font-weight:700;line-height:1.3;text-wrap:pretty">Cómo tres marcas locales duplicaron ventas con contenido propio</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8E8E8C;text-decoration:underline">leer la noticia ↗</div>
+            </div>
+          </div>
+        </div>
+        <div style="height:82px;border-top:1px solid #E3E3E1;background:#FFFFFF;display:flex;align-items:center;justify-content:space-around;padding-bottom:14px">
+          <div style="width:50px;height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+            <div style="width:20px;height:2px;background:#8E8E8C"></div>
+            <div style="width:20px;height:2px;background:#8E8E8C"></div>
+            <div style="width:20px;height:2px;background:#8E8E8C"></div>
+          </div>
+          <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#9A9A97,#4A4A48);display:flex;align-items:center;justify-content:center">
+            <div style="width:22px;height:22px;border-radius:50%;border:2px solid #FFFFFF;position:relative">
+              <div style="position:absolute;left:-7px;top:8px;width:36px;height:6px;border-radius:50%;border:1.5px solid #FFFFFF;transform:rotate(-18deg)"></div>
+            </div>
+          </div>
+          <div style="width:50px;height:50px;display:flex;align-items:center;justify-content:center">
+            <div style="width:24px;height:20px;border:2px solid #8E8E8C;border-radius:7px 7px 7px 2px"></div>
+          </div>
+        </div>
+      </div>
+      <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:13px;line-height:1.5;color:#6E6E6B;text-wrap:pretty">Amigos / Logros / Tienda viven en la pantalla, no en la barra. La fila de círculos es el punto abierto a confirmar. El feed continúa con scroll.</div>
+      </sc-if>
+    </div>
+
+    <!-- 5 -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">05</div>
+        <div style="font-size:18px;font-weight:700">Logros e insignias</div>
+      </div>
+      <sc-if value="{{ showTags }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#6E6E6B;background:#E3E3E1;border-radius:4px;padding:4px 8px;align-self:flex-start">PIZARRA</div>
+      </sc-if>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #DEDEDC;background:#F5F5F4;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+        <div style="display:flex;justify-content:space-between;padding:16px 28px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">
+          <div>9:41</div>
+          <div>▮▮▮</div>
+        </div>
+        <div style="padding:18px 24px;display:flex;align-items:center;gap:14px">
+          <div style="width:38px;height:38px;border-radius:12px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;justify-content:center;font-size:16px;color:#6E6E6B">←</div>
+          <div style="font-size:22px;font-weight:800;letter-spacing:-.02em">Logros</div>
+        </div>
+        <div style="padding:0 24px;display:flex;flex-direction:column;gap:10px">
+          <div style="background:#26262A;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div style="font-size:15px;font-weight:700;color:#FFFFFF">Explorador constante</div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <div style="width:12px;height:12px;background:#C9C9CE;transform:rotate(45deg);border-radius:2px"></div>
+                <div style="font-size:13px;font-weight:700;color:#FFFFFF">+40</div>
+              </div>
+            </div>
+            <div style="height:8px;border-radius:5px;background:#3E3E44;overflow:hidden">
+              <div style="width:68%;height:100%;background:linear-gradient(90deg,#9A9A97,#E3E3E1)"></div>
+            </div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#A8A8AC">17 / 25 lecciones</div>
+          </div>
+          <div style="background:#FFFFFF;border:1px solid #E3E3E1;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div style="font-size:15px;font-weight:700">Primer planeta completo</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8E8E8C">listo</div>
+            </div>
+            <div style="height:8px;border-radius:5px;background:#EDEDEB;overflow:hidden">
+              <div style="width:100%;height:100%;background:#4A4A48"></div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:22px 24px 12px;font-size:17px;font-weight:800;letter-spacing:-.01em">Insignias</div>
+        <div style="padding:0 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+          <div style="aspect-ratio:1;border-radius:18px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#8E8E8C,#4A4A48)"></div>
+            <div style="font-size:10px;font-weight:700">Despegue</div>
+          </div>
+          <div style="aspect-ratio:1;border-radius:18px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+            <div style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#8E8E8C,#4A4A48);transform:rotate(45deg)"></div>
+            <div style="font-size:10px;font-weight:700">7 días</div>
+          </div>
+          <div style="aspect-ratio:1;border-radius:18px;background:#EFEFED;border:1px dashed #D4D4D1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+            <div style="width:38px;height:38px;border-radius:50%;background:#DEDEDC"></div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9E9E9B">bloqueada</div>
+          </div>
+          <div style="aspect-ratio:1;border-radius:18px;background:#EFEFED;border:1px dashed #D4D4D1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+            <div style="width:38px;height:38px;border-radius:50%;background:#DEDEDC"></div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9E9E9B">bloqueada</div>
+          </div>
+          <div style="aspect-ratio:1;border-radius:18px;background:#EFEFED;border:1px dashed #D4D4D1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+            <div style="width:38px;height:38px;border-radius:50%;background:#DEDEDC"></div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9E9E9B">bloqueada</div>
+          </div>
+          <div style="aspect-ratio:1;border-radius:18px;background:#EFEFED;border:1px dashed #D4D4D1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+            <div style="width:38px;height:38px;border-radius:50%;background:#DEDEDC"></div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9E9E9B">bloqueada</div>
+          </div>
+        </div>
+        <div style="flex:1"></div>
+        <div style="height:82px;border-top:1px solid #E3E3E1;background:#FFFFFF;display:flex;align-items:center;justify-content:space-around;padding-bottom:14px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:20px;height:2px;background:#8E8E8C"></div>
+            <div style="width:20px;height:2px;background:#8E8E8C"></div>
+            <div style="width:20px;height:2px;background:#8E8E8C"></div>
+          </div>
+          <div style="width:56px;height:56px;border-radius:50%;background:#EDEDEB;border:1px solid #E3E3E1;display:flex;align-items:center;justify-content:center">
+            <div style="width:22px;height:22px;border-radius:50%;border:2px solid #8E8E8C;position:relative">
+              <div style="position:absolute;left:-7px;top:8px;width:36px;height:6px;border-radius:50%;border:1.5px solid #8E8E8C;transform:rotate(-18deg)"></div>
+            </div>
+          </div>
+          <div style="width:24px;height:20px;border:2px solid #8E8E8C;border-radius:7px 7px 7px 2px"></div>
+        </div>
+      </div>
+      <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:13px;line-height:1.5;color:#6E6E6B;text-wrap:pretty">Se accede desde el botón Logros del dashboard, no desde la barra inferior.</div>
+      </sc-if>
+    </div>
+
+    <!-- 6 -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">06</div>
+        <div style="font-size:18px;font-weight:700">Galaxia (intro mundo)</div>
+      </div>
+      <sc-if value="{{ showTags }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#6E6E6B;background:#E3E3E1;border-radius:4px;padding:4px 8px;align-self:flex-start">PIZARRA + TU EXPLICACIÓN</div>
+      </sc-if>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #DEDEDC;background:#0E0E10;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.45)">
+        <div style="position:absolute;inset:0;background:radial-gradient(1px 1px at 12% 16%,#5A5A5E 50%,transparent 51%),radial-gradient(1px 1px at 68% 10%,#6E6E72 50%,transparent 51%),radial-gradient(1.5px 1.5px at 34% 42%,#7A7A7E 50%,transparent 51%),radial-gradient(1px 1px at 88% 36%,#55555A 50%,transparent 51%),radial-gradient(1px 1px at 22% 66%,#66666A 50%,transparent 51%),radial-gradient(1.5px 1.5px at 76% 74%,#4E4E52 50%,transparent 51%),radial-gradient(1px 1px at 48% 92%,#5A5A5E 50%,transparent 51%)"></div>
+        <div style="position:relative;display:flex;justify-content:space-between;padding:16px 28px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9A9A9E">
+          <div>9:41</div>
+          <div>▮▮▮</div>
+        </div>
+        <div style="position:relative;padding:18px 24px;display:flex;align-items:center;justify-content:space-between">
+          <div style="width:42px;height:42px;border-radius:13px;background:rgba(255,255,255,.08);border:1px solid #3A3A3E;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+            <div style="width:18px;height:2px;background:#D8D8DA"></div>
+            <div style="width:18px;height:2px;background:#D8D8DA"></div>
+            <div style="width:18px;height:2px;background:#D8D8DA"></div>
+          </div>
+          <div style="padding:9px 16px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid #3A3A3E;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#D8D8DA">vista panorámica</div>
+          <div style="display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid #3A3A3E">
+            <div style="width:13px;height:13px;background:#C9C9CE;transform:rotate(45deg);border-radius:2px"></div>
+            <div style="font-size:14px;font-weight:700;color:#FFFFFF">128</div>
+          </div>
+        </div>
+        <div style="position:relative;flex:1;padding:8px 24px 0">
+          <div style="position:relative;height:100%">
+            <div style="position:absolute;left:96px;top:78px;height:520px;width:2px;background:repeating-linear-gradient(#55555A 0 7px,transparent 7px 16px)"></div>
+            <div style="position:absolute;left:24px;top:36px;display:flex;flex-direction:column;align-items:center;gap:10px">
+              <div style="width:124px;height:124px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#9A9A97,#4A4A48 70%);box-shadow:0 0 0 8px rgba(154,154,151,.14),0 0 44px rgba(200,200,200,.18);position:relative">
+                <div style="position:absolute;left:-16px;top:64px;width:156px;height:22px;border-radius:50%;border:2px solid rgba(220,220,224,.5);transform:rotate(-16deg)"></div>
+              </div>
+              <div style="font-size:16px;font-weight:800;color:#FFFFFF">Mentalidad</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#A8A8AC">ACTIVO · 3 / 8 lecciones</div>
+            </div>
+            <div style="position:absolute;right:16px;top:250px;display:flex;flex-direction:column;align-items:center;gap:8px">
+              <div style="width:86px;height:86px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#4E4E52,#2A2A2E 72%);border:1px solid #3A3A3E"></div>
+              <div style="font-size:13px;font-weight:700;color:#8E8E92">Marketing</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#6E6E72">bloqueado</div>
+            </div>
+            <div style="position:absolute;left:28px;top:400px;display:flex;flex-direction:column;align-items:center;gap:8px">
+              <div style="width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#46464A,#26262A 72%);border:1px solid #37373B"></div>
+              <div style="font-size:13px;font-weight:700;color:#8E8E92">Ventas</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#6E6E72">bloqueado</div>
+            </div>
+            <div style="position:absolute;right:38px;top:520px;display:flex;flex-direction:column;align-items:center;gap:8px">
+              <div style="width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#424246,#232327 72%);border:1px solid #343438"></div>
+              <div style="font-size:12px;font-weight:700;color:#8E8E92">Finanzas</div>
+            </div>
+            <div style="position:absolute;left:62px;top:596px;display:flex;align-items:center;gap:10px">
+              <div style="width:70px;height:70px;border-radius:50%;border:2px dashed #6E6E72;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:#D8D8DA">FIN</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8E8E92;max-width:13ch;line-height:1.4">meta del recorrido</div>
+            </div>
+          </div>
+          <div style="position:absolute;right:20px;bottom:104px;display:flex;flex-direction:column;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:#6E6E72">
+            <div>scroll</div>
+            <div style="font-size:14px;color:#8E8E92">↓</div>
+          </div>
+        </div>
+        <div style="position:relative;height:82px;border-top:1px solid #2A2A2E;background:rgba(14,14,16,.9);display:flex;align-items:center;justify-content:space-around;padding-bottom:14px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:20px;height:2px;background:#8E8E92"></div>
+            <div style="width:20px;height:2px;background:#8E8E92"></div>
+            <div style="width:20px;height:2px;background:#8E8E92"></div>
+          </div>
+          <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#C4C4C1,#6E6E6B);display:flex;align-items:center;justify-content:center">
+            <div style="width:22px;height:22px;border-radius:50%;border:2px solid #14141A;position:relative">
+              <div style="position:absolute;left:-7px;top:8px;width:36px;height:6px;border-radius:50%;border:1.5px solid #14141A;transform:rotate(-18deg)"></div>
+            </div>
+          </div>
+          <div style="width:24px;height:20px;border:2px solid #8E8E92;border-radius:7px 7px 7px 2px"></div>
+        </div>
+      </div>
+      <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:13px;line-height:1.5;color:#6E6E6B;text-wrap:pretty">Planeta activo a color, el resto en gris (aquí ambos grises se distinguen por luminosidad). El menú ☰ abre los mundos en lista.</div>
+      </sc-if>
+    </div>
+
+    <!-- 7 -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">07</div>
+        <div style="font-size:18px;font-weight:700">Camino del planeta</div>
+      </div>
+      <sc-if value="{{ showTags }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#6E6E6B;background:#E3E3E1;border-radius:4px;padding:4px 8px;align-self:flex-start">PIZARRA + TU EXPLICACIÓN</div>
+      </sc-if>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #DEDEDC;background:#17171A;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.45)">
+        <div style="position:absolute;inset:0;background:linear-gradient(#17171A,#2E2E32 55%,#4A4A4E)"></div>
+        <div style="position:absolute;left:0;right:0;bottom:82px;height:180px;background:repeating-linear-gradient(120deg,rgba(255,255,255,.05) 0 12px,rgba(255,255,255,.02) 12px 24px)"></div>
+        <div style="position:relative;display:flex;justify-content:space-between;padding:16px 28px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9A9A9E">
+          <div>9:41</div>
+          <div>▮▮▮</div>
+        </div>
+        <div style="position:relative;padding:18px 24px;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid #45454A;display:flex;align-items:center;justify-content:center;color:#D8D8DA">←</div>
+            <div style="display:flex;flex-direction:column">
+              <div style="font-size:18px;font-weight:800;color:#FFFFFF;letter-spacing:-.01em">Planeta Tierra</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#A8A8AC">tema visual: lugares del mundo real</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid #45454A">
+            <div style="width:12px;height:12px;background:#C9C9CE;transform:rotate(45deg);border-radius:2px"></div>
+            <div style="font-size:13px;font-weight:700;color:#FFFFFF">128</div>
+          </div>
+        </div>
+        <div style="position:relative;flex:1;padding:6px 24px 0">
+          <div style="position:relative;height:100%">
+            <div style="position:absolute;left:150px;top:24px;width:2px;height:72px;background:repeating-linear-gradient(#8E8E92 0 6px,transparent 6px 14px)"></div>
+            <div style="position:absolute;left:214px;top:40px;display:flex;flex-direction:column;align-items:center;gap:7px">
+              <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#F2F2F0,#B4B4B1);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -8px rgba(0,0,0,.6)">
+                <div style="width:22px;height:22px;border-radius:50%;background:#2E2E32"></div>
+              </div>
+              <div style="font-size:12px;font-weight:700;color:#FFFFFF">Lima</div>
+            </div>
+            <div style="position:absolute;left:96px;top:150px;display:flex;flex-direction:column;align-items:center;gap:7px">
+              <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#E8E8E6,#A8A8A4);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -8px rgba(0,0,0,.6);font-size:20px;font-weight:800;color:#2E2E32">✓</div>
+              <div style="font-size:12px;font-weight:700;color:#FFFFFF">Bogotá</div>
+            </div>
+            <div style="position:absolute;left:36px;top:266px;display:flex;flex-direction:column;align-items:center;gap:9px">
+              <div style="width:96px;height:96px;border-radius:26px;background:linear-gradient(135deg,#FFFFFF,#C4C4C1);border:3px solid #FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 12px 26px -10px rgba(0,0,0,.65)">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;color:#5E5E5B">PARADA</div>
+                <div style="font-size:15px;font-weight:800;color:#1A1A19">PRINCIPAL</div>
+              </div>
+              <div style="font-size:12px;font-weight:700;color:#FFFFFF">Ciudad de México</div>
+            </div>
+            <div style="position:absolute;left:186px;top:406px;display:flex;flex-direction:column;align-items:center;gap:7px">
+              <div style="width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,.14);border:2px dashed #9A9A9E;display:flex;align-items:center;justify-content:center;color:#D8D8DA;font-size:18px">▶</div>
+              <div style="font-size:12px;font-weight:700;color:#D8D8DA">Madrid</div>
+            </div>
+            <div style="position:absolute;left:58px;top:518px;display:flex;flex-direction:column;align-items:center;gap:7px">
+              <div style="width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid #6E6E72"></div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9A9A9E">bloqueado</div>
+            </div>
+            <div style="position:absolute;left:214px;top:604px;display:flex;flex-direction:column;align-items:center;gap:7px">
+              <div style="width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid #6E6E72"></div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9A9A9E">bloqueado</div>
+            </div>
+          </div>
+        </div>
+        <div style="position:relative;height:82px;border-top:1px solid #45454A;background:rgba(23,23,26,.92);display:flex;align-items:center;justify-content:space-around;padding-bottom:14px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:20px;height:2px;background:#9A9A9E"></div>
+            <div style="width:20px;height:2px;background:#9A9A9E"></div>
+            <div style="width:20px;height:2px;background:#9A9A9E"></div>
+          </div>
+          <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#C4C4C1,#6E6E6B);display:flex;align-items:center;justify-content:center">
+            <div style="width:22px;height:22px;border-radius:50%;border:2px solid #17171A;position:relative">
+              <div style="position:absolute;left:-7px;top:8px;width:36px;height:6px;border-radius:50%;border:1.5px solid #17171A;transform:rotate(-18deg)"></div>
+            </div>
+          </div>
+          <div style="width:24px;height:20px;border:2px solid #9A9A9E;border-radius:7px 7px 7px 2px"></div>
+        </div>
+      </div>
+      <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:13px;line-height:1.5;color:#6E6E6B;text-wrap:pretty">Camino tematizado por planeta: en “Tierra” los nodos son lugares reales. La parada principal se marca distinto del resto.</div>
+      </sc-if>
+    </div>
+
+    <!-- 8 -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">08</div>
+        <div style="font-size:18px;font-weight:700">Lección · Video</div>
+      </div>
+      <sc-if value="{{ showTags }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#6E6E6B;background:#E3E3E1;border-radius:4px;padding:4px 8px;align-self:flex-start">PIZARRA · PASO 1 DE 4</div>
+      </sc-if>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #DEDEDC;background:#F5F5F4;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+        <div style="display:flex;justify-content:space-between;padding:16px 28px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">
+          <div>9:41</div>
+          <div>▮▮▮</div>
+        </div>
+        <div style="padding:18px 24px 14px;display:flex;align-items:center;gap:12px">
+          <div style="width:34px;height:34px;border-radius:11px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;justify-content:center;color:#6E6E6B">✕</div>
+          <div style="flex:1;display:flex;gap:6px">
+            <div style="flex:1;height:6px;border-radius:4px;background:#3A3A3C"></div>
+            <div style="flex:1;height:6px;border-radius:4px;background:#DEDEDC"></div>
+            <div style="flex:1;height:6px;border-radius:4px;background:#DEDEDC"></div>
+            <div style="flex:1;height:6px;border-radius:4px;background:#DEDEDC"></div>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8E8E8C">1/4</div>
+        </div>
+        <div style="padding:0 24px;display:flex;flex-direction:column;gap:18px;flex:1">
+          <div style="border-radius:22px;overflow:hidden;background:#26262A;aspect-ratio:16/10;position:relative;display:flex;align-items:center;justify-content:center">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 10px,transparent 10px 20px)"></div>
+            <div style="position:relative;width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center">
+              <div style="width:0;height:0;border-left:22px solid #26262A;border-top:13px solid transparent;border-bottom:13px solid transparent;margin-left:6px"></div>
+            </div>
+            <div style="position:absolute;left:16px;right:16px;bottom:14px;display:flex;flex-direction:column;gap:7px">
+              <div style="height:4px;border-radius:3px;background:rgba(255,255,255,.28);overflow:hidden">
+                <div style="width:34%;height:100%;background:#E8E8E6"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#C4C4C1">
+                <div>02:14</div>
+                <div>06:30</div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;color:#8E8E8C">LECCIÓN 04 · CIUDAD DE MÉXICO</div>
+            <div style="font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1.15;text-wrap:pretty">Cómo construir un embudo de ventas simple</div>
+            <div style="font-size:15px;line-height:1.55;color:#4A4A48;text-wrap:pretty">Nova te explica las tres etapas del embudo con ejemplos de tiendas pequeñas de tu rubro.</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:1px solid #E3E3E1;border-radius:18px;padding:14px">
+            <div style="width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#C4C4C1,#8E8E8C);flex:none"></div>
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <div style="font-size:14px;font-weight:700">Nova</div>
+              <div style="font-size:12px;color:#8E8E8C">mentora de esta lección</div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:16px 24px 44px">
+          <div style="height:58px;border-radius:16px;background:linear-gradient(135deg,#9A9A97,#5E5E5B 55%,#333331);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Continuar</div>
+        </div>
+      </div>
+      <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:13px;line-height:1.5;color:#6E6E6B;text-wrap:pretty">Primer paso de la secuencia de lección. Pendiente confirmar si los pasos son salteables.</div>
+      </sc-if>
+    </div>
+
+    <!-- 9 -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">09</div>
+        <div style="font-size:18px;font-weight:700">Lección · Preguntas / Info</div>
+      </div>
+      <sc-if value="{{ showTags }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#6E6E6B;background:#E3E3E1;border-radius:4px;padding:4px 8px;align-self:flex-start">PIZARRA · PASO 2 DE 4</div>
+      </sc-if>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #DEDEDC;background:#F5F5F4;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+        <div style="display:flex;justify-content:space-between;padding:16px 28px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">
+          <div>9:41</div>
+          <div>▮▮▮</div>
+        </div>
+        <div style="padding:18px 24px 14px;display:flex;align-items:center;gap:12px">
+          <div style="width:34px;height:34px;border-radius:11px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;justify-content:center;color:#6E6E6B">←</div>
+          <div style="flex:1;display:flex;gap:6px">
+            <div style="flex:1;height:6px;border-radius:4px;background:#3A3A3C"></div>
+            <div style="flex:1;height:6px;border-radius:4px;background:#3A3A3C"></div>
+            <div style="flex:1;height:6px;border-radius:4px;background:#DEDEDC"></div>
+            <div style="flex:1;height:6px;border-radius:4px;background:#DEDEDC"></div>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8E8E8C">2/4</div>
+        </div>
+        <div style="padding:8px 24px 0;display:flex;flex-direction:column;gap:16px;flex:1">
+          <div style="background:#26262A;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;color:#A8A8AC">REFUERZO</div>
+            <div style="font-size:28px;font-weight:800;color:#FFFFFF;letter-spacing:-.02em;line-height:1.18">¿Qué es un embudo de ventas?</div>
+            <div style="font-size:15px;line-height:1.55;color:#C4C4C1;text-wrap:pretty">Es el recorrido que hace una persona desde que te descubre hasta que te compra. Cada etapa pierde gente: por eso se ve como un embudo.</div>
+          </div>
+          <div style="font-size:16px;font-weight:700">Elige la respuesta correcta</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="border-radius:16px;background:#FFFFFF;border:1px solid #E3E3E1;padding:16px 18px;display:flex;gap:14px;align-items:center">
+              <div style="width:28px;height:28px;border-radius:9px;background:#EDEDEB;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#6E6E6B;flex:none">A</div>
+              <div style="font-size:15px;line-height:1.35;text-wrap:pretty">La cantidad de seguidores que tiene tu marca</div>
+            </div>
+            <div style="border-radius:16px;background:#FFFFFF;border:2px solid #3A3A3C;padding:16px 18px;display:flex;gap:14px;align-items:center">
+              <div style="width:28px;height:28px;border-radius:9px;background:#3A3A3C;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#FFFFFF;flex:none">B</div>
+              <div style="font-size:15px;font-weight:700;line-height:1.35;text-wrap:pretty">El recorrido de descubrimiento a compra</div>
+            </div>
+            <div style="border-radius:16px;background:#FFFFFF;border:1px solid #E3E3E1;padding:16px 18px;display:flex;gap:14px;align-items:center">
+              <div style="width:28px;height:28px;border-radius:9px;background:#EDEDEB;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#6E6E6B;flex:none">C</div>
+              <div style="font-size:15px;line-height:1.35;text-wrap:pretty">Un descuento aplicado al carrito</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;padding:14px 16px;border-radius:16px;background:#EFEFED;border:1px dashed #D4D4D1">
+            <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#C4C4C1,#8E8E8C);flex:none"></div>
+            <div style="font-size:13px;line-height:1.45;color:#4A4A48;text-wrap:pretty">Nova puede explicarte esto otra vez por 2 💠</div>
+          </div>
+        </div>
+        <div style="padding:16px 24px 44px">
+          <div style="height:58px;border-radius:16px;background:linear-gradient(135deg,#9A9A97,#5E5E5B 55%,#333331);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Comprobar</div>
+        </div>
+      </div>
+      <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:13px;line-height:1.5;color:#6E6E6B;text-wrap:pretty">Formato “¿Qué es…?” con preguntas de apoyo sobre lo visto en el video.</div>
+      </sc-if>
+    </div>
+
+    <!-- 10 -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">10</div>
+        <div style="font-size:18px;font-weight:700">Lección · Caso práctico</div>
+      </div>
+      <sc-if value="{{ showTags }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#6E6E6B;background:#E3E3E1;border-radius:4px;padding:4px 8px;align-self:flex-start">PIZARRA · PASO 3 DE 4</div>
+      </sc-if>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #DEDEDC;background:#F5F5F4;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+        <div style="display:flex;justify-content:space-between;padding:16px 28px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">
+          <div>9:41</div>
+          <div>▮▮▮</div>
+        </div>
+        <div style="padding:18px 24px 14px;display:flex;align-items:center;gap:12px">
+          <div style="width:34px;height:34px;border-radius:11px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;justify-content:center;color:#6E6E6B">←</div>
+          <div style="flex:1;display:flex;gap:6px">
+            <div style="flex:1;height:6px;border-radius:4px;background:#3A3A3C"></div>
+            <div style="flex:1;height:6px;border-radius:4px;background:#3A3A3C"></div>
+            <div style="flex:1;height:6px;border-radius:4px;background:#3A3A3C"></div>
+            <div style="flex:1;height:6px;border-radius:4px;background:#DEDEDC"></div>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8E8E8C">3/4</div>
+        </div>
+        <div style="padding:8px 24px 0;display:flex;flex-direction:column;gap:16px;flex:1">
+          <div style="border-radius:22px;overflow:hidden;background:#FFFFFF;border:1px solid #E3E3E1">
+            <div style="height:150px;background:repeating-linear-gradient(135deg,#E8E8E6 0 9px,#DCDCDA 9px 18px);display:flex;align-items:flex-end;justify-content:center;padding-bottom:10px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8E8E8C">imagen del caso</div>
+            </div>
+            <div style="padding:18px;display:flex;flex-direction:column;gap:10px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:#8E8E8C">CASO REAL · NOMBRE CAMBIADO</div>
+              <div style="font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.15">Pepito compra Kola</div>
+              <div style="font-size:15px;line-height:1.55;color:#4A4A48;text-wrap:pretty">La marca vende 80% por WhatsApp. El equipo quiere invertir todo el presupuesto del mes en anuncios para llegar a público nuevo, sin tocar la atención de los clientes que ya escriben.</div>
+            </div>
+          </div>
+          <div style="font-size:17px;font-weight:800;letter-spacing:-.01em;text-wrap:pretty">¿Tomarías esa decisión?</div>
+          <div style="display:flex;gap:12px">
+            <div style="flex:1;height:72px;border-radius:18px;background:#FFFFFF;border:2px solid #3A3A3C;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800">Sí</div>
+            <div style="flex:1;height:72px;border-radius:18px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#6E6E6B">No</div>
+          </div>
+          <div style="padding:16px;border-radius:18px;background:#26262A;display:flex;flex-direction:column;gap:8px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:#A8A8AC">PISTA</div>
+            <div style="font-size:14px;line-height:1.5;color:#E8E8E6;text-wrap:pretty">Piensa en qué etapa del embudo está fallando la marca antes de decidir dónde poner el dinero.</div>
+          </div>
+        </div>
+        <div style="padding:16px 24px 44px">
+          <div style="height:58px;border-radius:16px;background:linear-gradient(135deg,#9A9A97,#5E5E5B 55%,#333331);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Confirmar decisión</div>
+        </div>
+      </div>
+      <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:13px;line-height:1.5;color:#6E6E6B;text-wrap:pretty">Empresa reconocible con el nombre cambiado y decisión binaria Sí / No.</div>
+      </sc-if>
+    </div>
+
+    <!-- 11 -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">11</div>
+        <div style="font-size:18px;font-weight:700">Lección · Resolución</div>
+      </div>
+      <sc-if value="{{ showTags }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#6E6E6B;background:#E3E3E1;border-radius:4px;padding:4px 8px;align-self:flex-start">PIZARRA · PASO 4 DE 4</div>
+      </sc-if>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #DEDEDC;background:#F5F5F4;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+        <div style="display:flex;justify-content:space-between;padding:16px 28px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">
+          <div>9:41</div>
+          <div>▮▮▮</div>
+        </div>
+        <div style="padding:18px 24px 14px;display:flex;align-items:center;gap:12px">
+          <div style="width:34px;height:34px;border-radius:11px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;justify-content:center;color:#6E6E6B">←</div>
+          <div style="flex:1;display:flex;gap:6px">
+            <div style="flex:1;height:6px;border-radius:4px;background:#3A3A3C"></div>
+            <div style="flex:1;height:6px;border-radius:4px;background:#3A3A3C"></div>
+            <div style="flex:1;height:6px;border-radius:4px;background:#3A3A3C"></div>
+            <div style="flex:1;height:6px;border-radius:4px;background:#3A3A3C"></div>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8E8E8C">4/4</div>
+        </div>
+        <div style="padding:8px 24px 0;display:flex;flex-direction:column;gap:14px;flex:1;overflow:hidden">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;color:#8E8E8C">RESOLUCIÓN · EVALUACIÓN FINAL</div>
+          <div style="display:flex;gap:10px;align-items:flex-end">
+            <div style="width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#C4C4C1,#8E8E8C);flex:none"></div>
+            <div style="background:#FFFFFF;border:1px solid #E3E3E1;border-radius:18px 18px 18px 5px;padding:14px 16px;font-size:14px;line-height:1.45;max-width:250px;text-wrap:pretty">¿Cuál es la primera etapa del embudo?</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-end;justify-content:flex-end">
+            <div style="background:#26262A;color:#FFFFFF;border-radius:18px 18px 5px 18px;padding:14px 16px;font-size:14px;line-height:1.45;max-width:230px">Descubrimiento</div>
+            <div style="width:26px;height:26px;border-radius:50%;background:#3A3A3C;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none">✓</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-end">
+            <div style="width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#C4C4C1,#8E8E8C);flex:none"></div>
+            <div style="background:#FFFFFF;border:1px solid #E3E3E1;border-radius:18px 18px 18px 5px;padding:14px 16px;font-size:14px;line-height:1.45;max-width:250px;text-wrap:pretty">Si nadie te compra tras escribirte, ¿qué etapa revisas?</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-end;justify-content:flex-end">
+            <div style="background:#EFEFED;border:1px solid #D4D4D1;border-radius:18px 18px 5px 18px;padding:14px 16px;font-size:14px;line-height:1.45;max-width:230px;color:#6E6E6B">Descubrimiento</div>
+            <div style="width:26px;height:26px;border-radius:50%;background:#FFFFFF;border:1.5px solid #9E9E9B;color:#6E6E6B;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none">✕</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-end">
+            <div style="width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#C4C4C1,#8E8E8C);flex:none"></div>
+            <div style="background:#FFFFFF;border:1px solid #E3E3E1;border-radius:18px 18px 18px 5px;padding:14px 16px;font-size:14px;line-height:1.45;max-width:250px;text-wrap:pretty">Era conversión. Última: ¿qué mides para saber si mejoró?</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-end;justify-content:flex-end">
+            <div style="background:#26262A;color:#FFFFFF;border-radius:18px 18px 5px 18px;padding:14px 16px;font-size:14px;line-height:1.45;max-width:230px">Ventas sobre consultas</div>
+            <div style="width:26px;height:26px;border-radius:50%;background:#3A3A3C;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none">✓</div>
+          </div>
+          <div style="margin-top:auto;background:#FFFFFF;border:1px solid #E3E3E1;border-radius:22px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:16px">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:20px;font-weight:800;letter-spacing:-.02em">Lección aprobada</div>
+              <div style="font-size:13px;color:#8E8E8C">2 de 3 correctas</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:14px;background:#EDEDEB">
+              <div style="width:18px;height:18px;background:#C9C9CE;transform:rotate(45deg);border-radius:3px"></div>
+              <div style="font-size:18px;font-weight:800">+15</div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:16px 24px 44px">
+          <div style="height:58px;border-radius:16px;background:linear-gradient(135deg,#9A9A97,#5E5E5B 55%,#333331);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Volver al camino</div>
+        </div>
+      </div>
+      <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:13px;line-height:1.5;color:#6E6E6B;text-wrap:pretty">Preguntas en burbujas de chat con ✓ / ✕; determina si aprueba y cuántos diamantes gana.</div>
+      </sc-if>
+    </div>
+
+    <!-- 12 -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">12</div>
+        <div style="font-size:18px;font-weight:700">Chat con Nova</div>
+      </div>
+      <sc-if value="{{ showTags }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#6E6E6B;background:#E3E3E1;border-radius:4px;padding:4px 8px;align-self:flex-start">PIZARRA + TU EXPLICACIÓN</div>
+      </sc-if>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #DEDEDC;background:#F5F5F4;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+        <div style="display:flex;justify-content:space-between;padding:16px 28px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">
+          <div>9:41</div>
+          <div>▮▮▮</div>
+        </div>
+        <div style="padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E3E3E1;background:#FFFFFF">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#C4C4C1,#8E8E8C)"></div>
+            <div style="display:flex;flex-direction:column">
+              <div style="font-size:17px;font-weight:800;letter-spacing:-.01em">Nova</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8E8E8C">a bordo de la nave</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:999px;background:#EDEDEB;border:1px solid #E3E3E1">
+            <div style="width:13px;height:13px;background:#C9C9CE;transform:rotate(45deg);border-radius:2px"></div>
+            <div style="font-size:14px;font-weight:700">6</div>
+          </div>
+        </div>
+        <div style="flex:1;padding:18px 24px;display:flex;flex-direction:column;gap:12px;overflow:hidden">
+          <div style="align-self:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8E8E8C;background:#E8E8E6;padding:6px 12px;border-radius:999px">cada mensaje cuesta 2 diamantes</div>
+          <div style="display:flex;gap:10px;align-items:flex-end">
+            <div style="width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,#C4C4C1,#8E8E8C);flex:none"></div>
+            <div style="background:#FFFFFF;border:1px solid #E3E3E1;border-radius:18px 18px 18px 5px;padding:14px 16px;font-size:14px;line-height:1.5;max-width:255px;text-wrap:pretty">Hola Camila. Vi que terminaste el embudo de ventas. ¿Quieres aplicarlo a tu tienda de ropa?</div>
+          </div>
+          <div style="align-self:flex-end;background:#26262A;color:#FFFFFF;border-radius:18px 18px 5px 18px;padding:14px 16px;font-size:14px;line-height:1.5;max-width:240px">Sí, vendo por Instagram pero casi nadie me escribe</div>
+          <div style="display:flex;gap:10px;align-items:flex-end">
+            <div style="width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,#C4C4C1,#8E8E8C);flex:none"></div>
+            <div style="background:#FFFFFF;border:1px solid #E3E3E1;border-radius:18px 18px 18px 5px;padding:14px 16px;font-size:14px;line-height:1.5;max-width:255px;text-wrap:pretty">Entonces tu problema está en descubrimiento, no en conversión. Empecemos por tus tres publicaciones con más alcance.</div>
+          </div>
+          <div style="align-self:flex-end;display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8E8E8C">
+            <div style="width:10px;height:10px;background:#C9C9CE;transform:rotate(45deg);border-radius:2px"></div>
+            <div>−2 · quedan 6</div>
+          </div>
+        </div>
+        <div style="padding:14px 20px 40px;border-top:1px solid #E3E3E1;background:#FFFFFF;display:flex;align-items:center;gap:10px">
+          <div style="flex:1;height:50px;border-radius:999px;background:#F2F2F0;border:1px solid #E3E3E1;display:flex;align-items:center;padding:0 18px;font-size:14px;color:#9E9E9B">Escribe a Nova…</div>
+          <div style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#9A9A97,#4A4A48);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:16px">↑</div>
+        </div>
+      </div>
+      <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:13px;line-height:1.5;color:#6E6E6B;text-wrap:pretty">El chat se paga con diamantes; el costo por mensaje aún está por definir.</div>
+      </sc-if>
+    </div>
+
+    <!-- 13 -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">13</div>
+        <div style="font-size:18px;font-weight:700">Sin diamantes → Premium</div>
+      </div>
+      <sc-if value="{{ showTags }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#6E6E6B;background:#E3E3E1;border-radius:4px;padding:4px 8px;align-self:flex-start">PIZARRA · PUNTO DE CONVERSIÓN</div>
+      </sc-if>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #DEDEDC;background:#F5F5F4;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+        <div style="display:flex;justify-content:space-between;padding:16px 28px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">
+          <div>9:41</div>
+          <div>▮▮▮</div>
+        </div>
+        <div style="padding:16px 24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #E3E3E1;background:#FFFFFF;opacity:.5">
+          <div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#C4C4C1,#8E8E8C)"></div>
+          <div style="font-size:17px;font-weight:800">Nova</div>
+        </div>
+        <div style="flex:1;padding:18px 24px;display:flex;flex-direction:column;gap:12px;opacity:.35">
+          <div style="background:#FFFFFF;border:1px solid #E3E3E1;border-radius:18px 18px 18px 5px;padding:14px 16px;font-size:14px;max-width:255px">Empecemos por tus tres publicaciones…</div>
+          <div style="align-self:flex-end;background:#26262A;color:#FFFFFF;border-radius:18px 18px 5px 18px;padding:14px 16px;font-size:14px;max-width:230px">Listo, ¿y después?</div>
+        </div>
+        <div style="background:#FFFFFF;border-top:1px solid #E3E3E1;border-radius:28px 28px 0 0;padding:28px 24px 40px;display:flex;flex-direction:column;gap:18px;box-shadow:0 -20px 40px -24px rgba(0,0,0,.35)">
+          <div style="width:44px;height:4px;border-radius:3px;background:#DEDEDC;align-self:center"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center">
+            <div style="width:62px;height:62px;border-radius:18px;background:#EDEDEB;display:flex;align-items:center;justify-content:center">
+              <div style="width:24px;height:24px;background:#C9C9CE;transform:rotate(45deg);border-radius:4px;opacity:.55"></div>
+            </div>
+            <div style="font-size:24px;font-weight:800;letter-spacing:-.02em">Te quedaste sin diamantes</div>
+            <div style="font-size:15px;line-height:1.5;color:#6E6E6B;max-width:30ch;text-wrap:pretty">Gana más completando lecciones y planetas, o pasa a Premium y recibe diamantes cada semana.</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="height:56px;border-radius:16px;background:linear-gradient(135deg,#9A9A97,#5E5E5B 55%,#333331);display:flex;align-items:center;justify-content:center;gap:8px;color:#FFFFFF;font-size:16px;font-weight:700">Ver beneficios Premium →</div>
+            <div style="height:56px;border-radius:16px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:#4A4A48">Seguir una lección y ganar 💠</div>
+          </div>
+        </div>
+      </div>
+      <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:13px;line-height:1.5;color:#6E6E6B;text-wrap:pretty">La flecha “ver →” de la pizarra: el bloqueo del chat es el momento de ofrecer Premium.</div>
+      </sc-if>
+    </div>
+
+    <!-- 14 -->
+    <div style="display:flex;flex-direction:column;gap:14px;width:390px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">14</div>
+        <div style="font-size:18px;font-weight:700">Beneficios Premium</div>
+      </div>
+      <sc-if value="{{ showTags }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#6E6E6B;background:#E3E3E1;border-radius:4px;padding:4px 8px;align-self:flex-start">PIZARRA + TU EXPLICACIÓN</div>
+      </sc-if>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;border:1px solid #DEDEDC;background:#F5F5F4;display:flex;flex-direction:column;box-shadow:0 26px 50px -28px rgba(0,0,0,.28)">
+        <div style="display:flex;justify-content:space-between;padding:16px 28px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8E8E8C">
+          <div>9:41</div>
+          <div>▮▮▮</div>
+        </div>
+        <div style="padding:18px 24px 0;display:flex;justify-content:flex-end">
+          <div style="width:34px;height:34px;border-radius:11px;background:#FFFFFF;border:1px solid #E3E3E1;display:flex;align-items:center;justify-content:center;color:#6E6E6B">✕</div>
+        </div>
+        <div style="padding:14px 24px 0;display:flex;flex-direction:column;gap:8px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:#8E8E8C">LEVELUP PREMIUM</div>
+          <div style="font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.1">Explora sin<br />quedarte sin combustible</div>
+        </div>
+        <div style="padding:20px 24px 0">
+          <div style="background:#26262A;border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:18px">
+            <div style="display:flex;align-items:flex-end;gap:8px">
+              <div style="font-size:44px;font-weight:800;color:#FFFFFF;letter-spacing:-.03em;line-height:1">S/ 29</div>
+              <div style="font-size:15px;color:#A8A8AC;padding-bottom:7px">/ mes</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;gap:12px;align-items:center">
+                <div style="width:24px;height:24px;border-radius:50%;background:#C9C9CE;color:#26262A;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none">✓</div>
+                <div style="font-size:15px;color:#FFFFFF;font-weight:600">Diamantes cada semana</div>
+              </div>
+              <div style="display:flex;gap:12px;align-items:center">
+                <div style="width:24px;height:24px;border-radius:50%;background:#C9C9CE;color:#26262A;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none">✓</div>
+                <div style="font-size:15px;color:#FFFFFF;font-weight:600">2x diamantes por lección</div>
+              </div>
+              <div style="display:flex;gap:12px;align-items:center">
+                <div style="width:24px;height:24px;border-radius:50%;background:#C9C9CE;color:#26262A;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none">✓</div>
+                <div style="font-size:15px;color:#FFFFFF;font-weight:600">Personaliza tu animal</div>
+              </div>
+              <div style="display:flex;gap:12px;align-items:center">
+                <div style="width:24px;height:24px;border-radius:50%;background:#C9C9CE;color:#26262A;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none">✓</div>
+                <div style="font-size:15px;color:#FFFFFF;font-weight:600">Personaliza tu chat con Nova</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:16px 24px 0;display:flex;gap:12px">
+          <div style="flex:1;background:#FFFFFF;border:1px solid #E3E3E1;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:6px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8E8E8C">GRATIS</div>
+            <div style="font-size:15px;font-weight:700">Diamantes que ganas</div>
+            <div style="font-size:12px;color:#8E8E8C">solo por avanzar</div>
+          </div>
+          <div style="flex:1;background:#FFFFFF;border:2px solid #3A3A3C;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:6px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6E6E6B">PREMIUM</div>
+            <div style="font-size:15px;font-weight:700">N 💠 por semana</div>
+            <div style="font-size:12px;color:#8E8E8C">cantidad por definir</div>
+          </div>
+        </div>
+        <div style="flex:1"></div>
+        <div style="padding:16px 24px 44px;display:flex;flex-direction:column;gap:12px">
+          <div style="height:58px;border-radius:16px;background:linear-gradient(135deg,#9A9A97,#5E5E5B 55%,#333331);display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:17px;font-weight:700">Activar Premium</div>
+          <div style="font-size:12px;color:#8E8E8C;text-align:center">Puedes cancelar cuando quieras</div>
+        </div>
+      </div>
+      <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:13px;line-height:1.5;color:#6E6E6B;text-wrap:pretty">Mantiene el formato validado (precio grande, lista con checks, CTA en gradiente) con los beneficios nuevos.</div>
+      </sc-if>
+    </div>
+
+  </div>
+
+  <div style="max-width:860px;background:#FFFFFF;border:1px solid #DEDEDC;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:14px">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8E8E8C">Pendientes marcados en el documento</div>
+    <div style="display:flex;flex-direction:column;gap:10px;font-size:15px;line-height:1.5;color:#3A3A38">
+      <div>· ¿Nova se queda como personaje o pasa a una IA “copiloto de nave”?</div>
+      <div>· ¿Los planetas son los 8-9 mundos actuales con skin nueva o se renombran?</div>
+      <div>· ¿Qué función cumplen los círculos del dashboard? (aquí van como racha, reto, ranking y Nova)</div>
+      <div>· ¿“Tierra” es un planeta más o el hub inicial?</div>
+      <div>· Cantidad exacta de diamantes por lección, por planeta y por semana en Premium.</div>
+      <div>· ¿La secuencia Video → Preguntas → Casos → Resolución es obligatoria en ese orden?</div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showLegend&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Revisión&quot;},&quot;showTags&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Revisión&quot;},&quot;showNotes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Revisión&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      showLegend: this.props.showLegend ?? true,
+      showNotes: this.props.showNotes ?? true,
+      showTags: this.props.showTags ?? true,
+    };
+  }
+}
+</script>
+</body>
+</html>

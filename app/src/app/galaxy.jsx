@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, Modal } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, Modal } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Svg, { Defs, LinearGradient as SvgGradient, Stop, ClipPath, Circle, Path, G } from 'react-native-svg';
 import { router } from 'expo-router';
 import { Screen, DiamondPill, BottomNavGalaxy, Starfield } from '../components/ui';
 import { useAppState } from '../state/AppState';
@@ -17,52 +16,6 @@ const STARS = [
 // planetas (temáticos por rubro) se desbloquean más adelante, por eso esta pantalla
 // no deja navegar entre ellos todavía.
 const planet = PLANETS[0];
-
-// Globo terráqueo estilizado (océano + continentes) en vez del degradado genérico,
-// recortado en un círculo para que se lea como un planeta real y no como un ícono plano.
-function EarthGlobe({ size }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 238 238">
-      <Defs>
-        <SvgGradient id="ocean" x1="0.15" y1="0.1" x2="1" y2="1">
-          <Stop offset="0" stopColor="#BFF3E6" />
-          <Stop offset="0.5" stopColor="#4FB8D6" />
-          <Stop offset="1" stopColor="#2453C9" />
-        </SvgGradient>
-        <SvgGradient id="land" x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0" stopColor="#9AE8B0" />
-          <Stop offset="1" stopColor="#3FAE6C" />
-        </SvgGradient>
-        <ClipPath id="sphereClip">
-          <Circle cx="119" cy="119" r="119" />
-        </ClipPath>
-      </Defs>
-
-      <Circle cx="119" cy="119" r="119" fill="url(#ocean)" />
-
-      <G clipPath="url(#sphereClip)">
-        <Path
-          d="M26,44 C44,24 78,18 100,32 C114,40 112,58 98,64 C108,74 98,90 80,86 C84,98 66,108 52,96 C34,100 16,84 22,64 C10,58 14,46 26,44 Z"
-          fill="url(#land)"
-        />
-        <Path d="M78,86 C88,90 94,100 88,110 C80,108 74,98 78,86 Z" fill="url(#land)" />
-        <Path
-          d="M90,106 C110,100 132,110 134,130 C136,150 124,164 128,184 C130,200 116,220 102,212 C94,228 74,220 76,202 C64,196 66,176 76,162 C68,146 78,126 90,106 Z"
-          fill="url(#land)"
-        />
-        <Circle cx="104" cy="96" r="4.5" fill="url(#land)" />
-        <Circle cx="115" cy="102" r="3" fill="url(#land)" />
-        <Path
-          d="M208,48 C226,42 240,56 236,78 C242,96 226,112 212,102 C198,114 186,98 194,80 C182,68 196,52 208,48 Z"
-          fill="url(#land)"
-          opacity={0.92}
-        />
-      </G>
-
-      <Circle cx="88" cy="78" r="58" fill="#FFFFFF" opacity={0.12} />
-    </Svg>
-  );
-}
 
 export default function GalaxyScreen() {
   const { diamonds } = useAppState();
@@ -97,7 +50,7 @@ export default function GalaxyScreen() {
           <View style={styles.planet}>
             <View style={styles.planetClip}>
               {planet.name === 'Tierra' ? (
-                <EarthGlobe size={238} />
+                <Image source={require('../../assets/planeta-tierra.png')} style={styles.planetImage} resizeMode="cover" />
               ) : (
                 <LinearGradient
                   colors={[planet.from, planet.to]}
@@ -188,6 +141,7 @@ const styles = StyleSheet.create({
     borderRadius: 119,
     overflow: 'hidden',
   },
+  planetImage: { width: '100%', height: '100%' },
   ring: {
     position: 'absolute', left: -34, top: 97, width: 306, height: 44, borderRadius: 22,
     borderWidth: 2, borderColor: 'rgba(167,230,242,0.55)', transform: [{ rotate: '-16deg' }],
